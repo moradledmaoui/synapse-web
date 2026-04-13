@@ -9,7 +9,10 @@ export function useApi<T>(endpoint: string, refreshInterval = 10000) {
 
   const fetch_data = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}${endpoint}`);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      const res = await fetch(`${API_URL}${endpoint}`, { signal: controller.signal });
+      clearTimeout(timeout);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       setData(json);

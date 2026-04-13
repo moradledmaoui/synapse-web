@@ -77,10 +77,25 @@ export default function Dashboard() {
 
   if (pLoading || !portfolio) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center">
-          <div className="font-mono text-xl font-bold text-black mb-2">SYNAPSE</div>
-          <div className="text-sm text-gray-400">Connexion au moteur...</div>
+      <div className="min-h-screen bg-gray-100">
+        <div className="bg-white border-b border-gray-200 px-6 py-3">
+          <div className="text-sm font-semibold text-gray-900">Dashboard</div>
+        </div>
+        <div className="bg-[#111] px-6 py-6">
+          <div className="text-[9px] text-[#555] uppercase tracking-widest mb-2">Valeur du portfolio</div>
+          <div className="font-mono text-4xl font-bold text-[#333] leading-none mb-2">—</div>
+          <div className="text-sm text-[#444]">Connexion au moteur...</div>
+        </div>
+        <div className="bg-[#111] px-6 pb-5 grid grid-cols-3 gap-2">
+          {["Positions", "Win Rate", "Drawdown"].map(l => (
+            <div key={l} className="bg-[#1a1a1a] rounded-lg px-3 py-2.5">
+              <div className="text-[9px] text-[#555] uppercase tracking-wide mb-1">{l}</div>
+              <div className="font-mono text-sm font-bold text-[#333]">—</div>
+            </div>
+          ))}
+        </div>
+        <div className="px-6 py-8 text-center text-gray-400 text-sm">
+          Chargement des données...
         </div>
       </div>
     );
