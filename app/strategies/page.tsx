@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import StrategyConfigModal from "../components/StrategyConfigModal";
 import { useApi } from "../hooks/useApi";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
@@ -13,6 +14,7 @@ interface Strategy {
   risk_level: string;
   enabled: boolean;
   weight: number;
+  compliance?: string[];
   stats: { trades: number; wins: number; win_rate: number; pnl: number; };
 }
 
@@ -61,8 +63,29 @@ export default function Strategies() {
   const { data, loading, refetch } = useApi<Strategies>("/api/strategies", 10000);
   const { data: adaptiveData, refetch: refetchAdaptive } = useApi<Adaptive>("/api/adaptive/recommendations", 10000);
   const [autoMode, setAutoMode] = useState(false);
+
+  // Charge l'état AUTO depuis le serveur au démarrage
+  useEffect(() => {
+    fetch(`${API_URL}/api/adaptive/mode`)
+      .then(r => r.json())
+      .then(d => setAutoMode(d.auto_mode || false))
+      .catch(() => {});
+  }, []);
+
+  // Sauvegarde l'état AUTO sur le serveur
+  async function setAutoModeServer(value: boolean) {
+    setAutoMode(value);
+    try {
+      await fetch(`${API_URL}/api/adaptive/mode`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ auto_mode: value }),
+      });
+    } catch {}
+  }
   const [toggling, setToggling] = useState<string | null>(null);
   const [applying, setApplying] = useState(false);
+  const [configModal, setConfigModal] = useState<string | null>(null);
   const [autoExpanded, setAutoExpanded] = useState(false);
 
   const strategies = data?.strategies || [];
@@ -175,6 +198,31 @@ export default function Strategies() {
                 </div>
               )}
 
+              {/* Badges conformité */}
+              {strategy.compliance && strategy.compliance.length > 0 && (
+                <div className="flex gap-1.5 flex-wrap mb-2">
+                  {strategy.compliance.map((b: string) => (
+                    <span key={b} className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200">
+                      {b === "shariah" ? "☪️ Shariah" : b === "esg" ? "🌱 ESG" : b === "mifid2" ? "🇪🇺 MiFID II" : b}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Bouton config */}
+              <div className="flex justify-end mb-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setConfigModal(strategy.id); }}
+                  title="Configurer la stratégie"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all border border-gray-200 hover:border-gray-300"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                  </svg>
+                </button>
+              </div>
+
               {/* Stats */}
               {strategy.stats.trades > 0 ? (
                 <div className="grid grid-cols-4 gap-1.5">
@@ -201,6 +249,22 @@ export default function Strategies() {
   }
 
   return (
+    <>
+      {configModal && (() => {
+        const strat = strategies.find(s => s.id === configModal);
+        if (!strat) return null;
+        return (
+          <StrategyConfigModal
+            strategyId={strat.id}
+            strategyName={strat.name}
+            currentParams={strat as unknown as Record<string, number>}
+            currentCompliance={[]}
+            autoMode={autoMode}
+            onClose={() => setConfigModal(null)}
+            onSave={() => { refetch(); setConfigModal(null); }}
+          />
+        );
+      })()}
     <div className="min-h-screen bg-gray-100">
 
       {/* TOPBAR */}
@@ -250,7 +314,7 @@ export default function Strategies() {
                 </button>
               )}
               <button
-                onClick={() => setAutoMode(!autoMode)}
+                onClick={() => setAutoModeServer(!autoMode)}
                 disabled={applying}
                 className={`w-11 h-6 rounded-full relative transition-colors flex-shrink-0 ${autoMode ? "bg-[#111]" : "bg-gray-200"}`}
               >
@@ -337,5 +401,7 @@ export default function Strategies() {
         )}
       </div>
     </div>
+  );
+  </>
   );
 }

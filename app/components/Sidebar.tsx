@@ -15,7 +15,7 @@ const NAV = [
     items: [
       { label: "Dashboard", href: "/" },
       { label: "Journal", href: "/journal" },
-      { label: "Backtest", href: "/backtest" },
+      // { label: "Backtest", href: "/backtest" }, // Masqué — intégré dans les stratégies
     ],
   },
   {
@@ -44,7 +44,7 @@ const REGIME_COLORS: Record<string, string> = {
 const NAV_ICONS: Record<string, string> = {
   "/": "▦",
   "/journal": "◈",
-  "/backtest": "◎",
+  // "/backtest": "◎",
   "/coach": "◉",
   "/strategies": "◆",
   "/settings": "◇",

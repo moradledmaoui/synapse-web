@@ -1,11 +1,43 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
 
 export default function Settings() {
   const [saved, setSaved] = useState(false);
   const [activeSection, setActiveSection] = useState("risk");
+
+  const [capital, setCapital] = useState(10000);
+  const [capitalInput, setCapitalInput] = useState("10000");
+  const [capitalSaved, setCapitalSaved] = useState(false);
+
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+
+  // Charge le capital actuel
+  useEffect(() => {
+    fetch(`${API_URL}/api/portfolio`)
+      .then(r => r.json())
+      .then(d => {
+        setCapital(d.capital_initial || 10000);
+        setCapitalInput(String(d.capital_initial || 10000));
+      })
+      .catch(() => {});
+  }, []);
+
+  async function saveCapital() {
+    const val = parseFloat(capitalInput);
+    if (isNaN(val) || val < 100) return;
+    try {
+      await fetch(`${API_URL}/api/portfolio/capital`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ capital: val }),
+      });
+      setCapital(val);
+      setCapitalSaved(true);
+      setTimeout(() => setCapitalSaved(false), 3000);
+    } catch {}
+  }
 
   const [risk, setRisk] = useState({
     stop_loss: 2.0,
@@ -94,6 +126,59 @@ export default function Settings() {
         {activeSection === "risk" && (
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-4">Gestion du risque</div>
+
+            {/* Capital simulation */}
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-5">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="text-[12px] font-bold text-gray-900">Capital de simulation</div>
+                  <div className="text-[10px] text-gray-400 mt-0.5">Montant virtuel alloué au paper trading</div>
+                </div>
+                <div className="font-mono text-sm font-bold text-gray-900">
+                  {capital.toLocaleString("fr-FR")} USDT
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <div className="flex-1 flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
+                  <input
+                    type="number"
+                    value={capitalInput}
+                    onChange={e => setCapitalInput(e.target.value)}
+                    min={100}
+                    max={1000000}
+                    step={1000}
+                    className="flex-1 text-[12px] outline-none bg-transparent font-mono text-gray-900"
+                  />
+                  <span className="text-[10px] text-gray-400">USDT</span>
+                </div>
+                <button
+                  onClick={saveCapital}
+                  className={`text-[11px] font-bold px-4 py-2 rounded-lg transition-colors ${
+                    capitalSaved ? "bg-green-500 text-white" : "bg-[#111] text-white"
+                  }`}
+                >
+                  {capitalSaved ? "Mis à jour !" : "Appliquer"}
+                </button>
+              </div>
+              <div className="flex gap-2 mt-2 flex-wrap">
+                {[1000, 5000, 10000, 50000].map(v => (
+                  <button
+                    key={v}
+                    onClick={() => setCapitalInput(String(v))}
+                    className={`text-[10px] font-bold px-2 py-1 rounded border transition-colors ${
+                      capitalInput === String(v)
+                        ? "bg-[#111] text-white border-[#111]"
+                        : "bg-white text-gray-500 border-gray-200"
+                    }`}
+                  >
+                    {v.toLocaleString("fr-FR")} USDT
+                  </button>
+                ))}
+              </div>
+              <div className="text-[9px] text-orange-500 mt-2">
+                ⚠️ Modifier le capital réinitialise les métriques de performance
+              </div>
+            </div>
             <div className="space-y-5">
               {[
                 { label: "Stop Loss", key: "stop_loss", min: 0.5, max: 10, step: 0.5, suffix: "%", desc: "Perte maximale par trade avant fermeture automatique" },
