@@ -12,6 +12,8 @@ interface Portfolio {
   regime: string;
   positions_count: number;
   win_rate: number;
+  total_trades: number;
+  drawdown_pct: number;
 }
 
 interface Message {
@@ -25,13 +27,6 @@ interface Conversation {
   messages: Message[];
   createdAt: string;
 }
-
-const SUGGESTIONS = [
-  "Que faire en CHOP ?",
-  "Analyse mes pertes",
-  "Optimiser mes seuils",
-  "Réduire le risque",
-];
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -48,6 +43,82 @@ function loadConversations(): Conversation[] {
   } catch { return []; }
 }
 
+function getContextualSuggestions(portfolio: Portfolio | null): { label: string; prompt: string }[] {
+  if (!portfolio) return [
+    { label: "Présente-toi", prompt: "Présente-toi et explique comment tu peux m'aider" },
+    { label: "Comment ça marche ?", prompt: "Comment fonctionne le trading algorithmique ?" },
+  ];
+
+  const suggestions: { label: string; prompt: string }[] = [];
+  const regime = portfolio.regime;
+  const winRate = portfolio.win_rate;
+  const drawdown = portfolio.drawdown_pct;
+  const pnl = portfolio.pnl_usdt;
+  const positions = portfolio.positions_count;
+
+  // Suggestions basées sur le régime
+  if (regime === "bull") {
+    suggestions.push({
+      label: "Optimiser pour le BULL",
+      prompt: `Le marché est en BULL (RSI BTC élevé). Quelles stratégies dois-je privilégier et comment optimiser mes paramètres pour profiter au maximum de cette tendance haussière ?`
+    });
+  } else if (regime === "chop") {
+    suggestions.push({
+      label: "Survivre au CHOP",
+      prompt: `Le marché est en CHOP — sans direction claire. Quelles stratégies résistent le mieux et comment ajuster mes paramètres pour limiter les pertes dans ce contexte ?`
+    });
+  } else if (regime === "bear") {
+    suggestions.push({
+      label: "Protéger en BEAR",
+      prompt: `Le marché est en BEAR. Comment dois-je adapter ma stratégie pour protéger mon capital et éviter les pertes ? Faut-il tout désactiver ?`
+    });
+  }
+
+  // Suggestion basée sur le win rate
+  if (winRate < 30 && portfolio.total_trades > 5) {
+    suggestions.push({
+      label: `Win rate à ${winRate.toFixed(0)}% — pourquoi ?`,
+      prompt: `Mon win rate est de ${winRate.toFixed(1)}% sur ${portfolio.total_trades} trades. Analyse mes résultats et dis-moi quelle est la cause principale : mauvaises stratégies, mauvais timing, ou contexte de marché défavorable ?`
+    });
+  } else if (winRate >= 50) {
+    suggestions.push({
+      label: "Capitaliser sur ma performance",
+      prompt: `Mon win rate est de ${winRate.toFixed(1)}%. Comment puis-je capitaliser sur cette performance et l'améliorer encore ?`
+    });
+  }
+
+  // Suggestion basée sur le drawdown
+  if (drawdown > 5) {
+    suggestions.push({
+      label: `Drawdown ${drawdown.toFixed(1)}% — que faire ?`,
+      prompt: `Mon drawdown est de ${drawdown.toFixed(1)}%. C'est préoccupant. Analyse la situation et dis-moi comment réduire ce drawdown et protéger mon capital restant.`
+    });
+  }
+
+  // Suggestion basée sur les positions ouvertes
+  if (positions > 0) {
+    suggestions.push({
+      label: `Analyser mes ${positions} positions`,
+      prompt: `J'ai ${positions} positions ouvertes en ce moment. Analyse-les dans le contexte du régime ${regime.toUpperCase()} et dis-moi lesquelles ont le plus de chances de réussir.`
+    });
+  }
+
+  // Suggestions toujours utiles
+  suggestions.push({
+    label: "Améliorer une stratégie",
+    prompt: `En régime ${regime.toUpperCase()}, quelle est ma stratégie la moins performante et comment l'améliorer ou la désactiver temporairement ?`
+  });
+
+  if (pnl < 0) {
+    suggestions.push({
+      label: "Analyser mes pertes",
+      prompt: `Mon P&L est de ${pnl.toFixed(2)} USDT. Analyse les causes de ces pertes et donne-moi un plan concret pour inverser la tendance.`
+    });
+  }
+
+  return suggestions.slice(0, 4);
+}
+
 function CoachContent() {
   const searchParams = useSearchParams();
   const { data: portfolio } = useApi<Portfolio>("/api/portfolio", 30000);
@@ -59,32 +130,17 @@ function CoachContent() {
   const [provider, setProvider] = useState("openai");
   const [model, setModel] = useState("gpt-4o-mini");
   const [connected, setConnected] = useState(false);
-
-  // Charge la clé API depuis le serveur au démarrage
-  useEffect(() => {
-    fetch(`${API_URL}/api/config/coach/status`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.configured) {
-          setApiKey(d.api_key || "");
-          setProvider(d.provider || "openai");
-          setModel(d.model || "gpt-4o-mini");
-          setConnected(true);
-        }
-      })
-      .catch(() => {});
-  }, []);
   const [searchQuery, setSearchQuery] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const activeConv = conversations.find(c => c.id === activeId);
   const messages = activeConv?.messages || [];
+  const suggestions = getContextualSuggestions(portfolio);
 
   useEffect(() => {
     const convs = loadConversations();
     setConversations(convs);
 
-    // Contexte depuis Dashboard
     const symbol = searchParams.get("symbol");
     const pnl = searchParams.get("pnl");
     const strategy = searchParams.get("strategy");
@@ -93,8 +149,8 @@ function CoachContent() {
     if (symbol) {
       const title = `${symbol.replace("USDT", "/USDT")} — ${context === "closed" ? "analyse clôture" : "position ouverte"}`;
       const contextMsg = context === "closed"
-        ? `Je regarde le trade fermé sur ${symbol} — P&L : ${parseFloat(pnl || "0").toFixed(2)} USDT via ${strategy || "–"}.`
-        : `Je regarde ma position ouverte sur ${symbol} — P&L actuel : ${parseFloat(pnl || "0").toFixed(2)} USDT via ${strategy || "–"}.`;
+        ? `Analysons ensemble le trade fermé sur ${symbol}. P&L final : ${parseFloat(pnl || "0").toFixed(2)} USDT via ${strategy || "–"}. Explique-moi ce qui s'est passé et ce que je peux améliorer.`
+        : `J'ai une position ouverte sur ${symbol} via ${strategy || "–"}, P&L actuel : ${parseFloat(pnl || "0").toFixed(2)} USDT. Donne-moi ton analyse et tes conseils.`;
 
       const newConv: Conversation = {
         id: generateId(),
@@ -107,13 +163,25 @@ function CoachContent() {
       saveConversations(updated);
       setActiveId(newConv.id);
     }
+
+    // Auto-connect depuis config
+    fetch(`${API_URL}/api/config/coach/status`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.configured && d.api_key) {
+          setApiKey(d.api_key);
+          setProvider(d.provider || "openai");
+          setModel(d.model || "gpt-4o-mini");
+          setConnected(true);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Sync liste sidebar
   useEffect(() => {
     const list = document.getElementById("coach-conv-list");
     if (!list) return;
@@ -121,12 +189,9 @@ function CoachContent() {
       ? conversations.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()))
       : conversations;
     list.innerHTML = filtered.map(c => `
-      <div
-        data-id="${c.id}"
-        class="conv-item px-2 py-2 rounded-lg cursor-pointer mb-0.5 ${c.id === activeId ? "bg-[#1f1f1f]" : "hover:bg-[#1a1a1a]"}"
-      >
-        <div class="text-[11px] text-${c.id === activeId ? "white" : "[#ccc]"} truncate">${c.title}</div>
-        <div class="text-[9px] text-[#444] mt-0.5">${new Date(c.createdAt).toLocaleDateString("fr-FR")}</div>
+      <div data-id="${c.id}" class="conv-item px-2 py-2 rounded-lg cursor-pointer mb-0.5 ${c.id === activeId ? "bg-[#1f1f1f]" : ""}">
+        <div class="text-[11px] truncate" style="color: ${c.id === activeId ? "#fff" : "#aaa"}">${c.title}</div>
+        <div class="text-[9px] mt-0.5" style="color: #444">${new Date(c.createdAt).toLocaleDateString("fr-FR")}</div>
       </div>
     `).join("");
     list.querySelectorAll(".conv-item").forEach(el => {
@@ -158,18 +223,6 @@ function CoachContent() {
     setActiveId(conv.id);
   }
 
-  async function connect() {
-    if (!apiKey) return;
-    setConnected(true);
-    try {
-      await fetch(`${API_URL}/api/config/coach`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ api_key: apiKey, provider, model }),
-      });
-    } catch {}
-  }
-
   async function sendMessage(text?: string) {
     const content = text || input.trim();
     if (!content || loading || !connected) return;
@@ -181,7 +234,7 @@ function CoachContent() {
     if (!currentConv) {
       currentConv = {
         id: generateId(),
-        title: content.slice(0, 40),
+        title: content.slice(0, 45) + (content.length > 45 ? "..." : ""),
         messages: [],
         createdAt: new Date().toISOString(),
       };
@@ -191,13 +244,14 @@ function CoachContent() {
     const updatedConv = {
       ...currentConv,
       messages: updatedMessages,
-      title: currentConv.title === "Nouvelle conversation" ? content.slice(0, 40) : currentConv.title,
+      title: currentConv.title === "Nouvelle conversation"
+        ? content.slice(0, 45) + (content.length > 45 ? "..." : "")
+        : currentConv.title,
     };
 
     const updatedConvs = conversations.map(c => c.id === updatedConv.id ? updatedConv : c);
     const finalConvs = updatedConvs.find(c => c.id === updatedConv.id)
-      ? updatedConvs
-      : [updatedConv, ...conversations];
+      ? updatedConvs : [updatedConv, ...conversations];
 
     setConversations(finalConvs);
     saveConversations(finalConvs);
@@ -205,9 +259,15 @@ function CoachContent() {
     setLoading(true);
 
     try {
-      const context = portfolio
-        ? `Portfolio: ${portfolio.total_value.toFixed(2)} USDT, P&L: ${portfolio.pnl_usdt.toFixed(2)} USDT, Régime: ${portfolio.regime}, Positions: ${portfolio.positions_count}, Win rate: ${portfolio.win_rate}%`
-        : "";
+      const context = portfolio ? `
+Portfolio SYNAPSE :
+- Valeur totale : ${portfolio.total_value.toFixed(2)} USDT
+- P&L : ${portfolio.pnl_usdt.toFixed(2)} USDT
+- Régime marché : ${portfolio.regime.toUpperCase()}
+- Positions ouvertes : ${portfolio.positions_count}
+- Win rate : ${portfolio.win_rate}%
+- Drawdown : ${portfolio.drawdown_pct}%
+- Trades fermés : ${portfolio.total_trades}` : "";
 
       const res = await fetch(`${API_URL}/api/coach/chat`, {
         method: "POST",
@@ -229,7 +289,7 @@ function CoachContent() {
       setConversations(finalList);
       saveConversations(finalList);
     } catch {
-      const errorMsg: Message = { role: "assistant", content: "Erreur de connexion. Vérifiez votre clé API." };
+      const errorMsg: Message = { role: "assistant", content: "Erreur de connexion. Vérifiez votre clé API dans Config." };
       const finalMessages = [...updatedMessages, errorMsg];
       const finalConv = { ...updatedConv, messages: finalMessages };
       const finalList = finalConvs.map(c => c.id === finalConv.id ? finalConv : c);
@@ -246,25 +306,29 @@ function CoachContent() {
       {/* TOPBAR */}
       <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
         <div className="text-sm font-semibold text-gray-900">Coach AI</div>
-        {activeConv && (
-          <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            <span className="text-[10px] text-gray-600 max-w-[200px] truncate">{activeConv.title}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {connected ? (
+            <div className="flex items-center gap-1.5 text-[10px] text-green-600 font-medium">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+              Connecté
+            </div>
+          ) : (
+            <a href="/settings" className="text-[10px] text-orange-500 font-medium">
+              Configurer la clé API →
+            </a>
+          )}
+        </div>
       </div>
 
-
-
       {/* BRIEFING */}
-      {connected && portfolio && (
+      {portfolio && (
         <div className="mx-6 mt-3 bg-white rounded-xl border border-gray-200 px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
           <div className="w-1.5 h-1.5 rounded-full bg-yellow-400 flex-shrink-0" />
-          <div className="text-[11px] text-gray-600">
+          <div className="text-[11px] text-gray-600 flex-1">
             Régime <span className="font-bold text-gray-900">{portfolio.regime.toUpperCase()}</span>
-            {" · "}{portfolio.positions_count} positions
-            {" · "}{portfolio.win_rate}% win rate
-            {" · "}<span className={portfolio.pnl_usdt >= 0 ? "text-green-600 font-bold" : "text-red-600 font-bold"}>
+            {" · "}{portfolio.positions_count} position{portfolio.positions_count > 1 ? "s" : ""}
+            {" · "}Win rate <span className={`font-bold ${portfolio.win_rate >= 40 ? "text-green-600" : "text-red-600"}`}>{portfolio.win_rate}%</span>
+            {" · "}<span className={`font-bold ${portfolio.pnl_usdt >= 0 ? "text-green-600" : "text-red-600"}`}>
               {portfolio.pnl_usdt >= 0 ? "+" : ""}{portfolio.pnl_usdt.toFixed(2)} USDT
             </span>
           </div>
@@ -273,18 +337,31 @@ function CoachContent() {
 
       {/* MESSAGES */}
       <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-        {messages.length === 0 && connected && (
+
+        {messages.length === 0 && (
           <div>
-            <div className="text-center py-8">
-              <div className="w-10 h-10 bg-[#111] rounded-full flex items-center justify-center text-white text-sm font-bold mx-auto mb-3">AI</div>
+            <div className="text-center py-6">
+              <div className="w-12 h-12 bg-[#111] rounded-full flex items-center justify-center text-white text-sm font-bold mx-auto mb-3">AI</div>
               <div className="text-sm font-medium text-gray-900 mb-1">Coach SYNAPSE</div>
-              <div className="text-[11px] text-gray-400">Je connais votre portfolio en temps réel</div>
+              <div className="text-[11px] text-gray-400 mb-1">Je connais votre portfolio en temps réel</div>
+              {!connected && (
+                <a href="/settings" className="text-[11px] text-orange-500 underline">
+                  Configurez votre clé API pour activer le Coach
+                </a>
+              )}
             </div>
+
+            {/* Suggestions contextuelles */}
             <div className="grid grid-cols-2 gap-2">
-              {SUGGESTIONS.map(s => (
-                <button key={s} onClick={() => sendMessage(s)}
-                  className="bg-white border border-gray-200 rounded-xl px-4 py-3 text-[11px] font-medium text-gray-700 text-left hover:bg-gray-50 transition-colors">
-                  {s}
+              {suggestions.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => sendMessage(s.prompt)}
+                  disabled={!connected}
+                  className="bg-white border border-gray-200 rounded-xl px-4 py-3 text-left hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <div className="text-[11px] font-bold text-gray-900 mb-0.5">{s.label}</div>
+                  <div className="text-[10px] text-gray-400 line-clamp-2">{s.prompt.slice(0, 60)}...</div>
                 </button>
               ))}
             </div>
@@ -296,7 +373,7 @@ function CoachContent() {
             {msg.role === "assistant" && (
               <div className="w-6 h-6 bg-[#111] rounded-full flex items-center justify-center text-white text-[8px] font-bold flex-shrink-0 mt-1">AI</div>
             )}
-            <div className={`max-w-[78%] px-4 py-2.5 rounded-2xl text-[12px] leading-relaxed ${
+            <div className={`max-w-[78%] px-4 py-2.5 rounded-2xl text-[12px] leading-relaxed whitespace-pre-wrap ${
               msg.role === "user"
                 ? "bg-[#111] text-white rounded-br-sm"
                 : "bg-white border border-gray-200 text-gray-700 rounded-bl-sm"
@@ -309,8 +386,13 @@ function CoachContent() {
         {loading && (
           <div className="flex gap-2">
             <div className="w-6 h-6 bg-[#111] rounded-full flex items-center justify-center text-white text-[8px] font-bold flex-shrink-0">AI</div>
-            <div className="bg-white border border-gray-200 px-4 py-2.5 rounded-2xl rounded-bl-sm text-[12px] text-gray-400">
-              Le Coach réfléchit...
+            <div className="bg-white border border-gray-200 px-4 py-2.5 rounded-2xl rounded-bl-sm flex items-center gap-2">
+              <div className="flex gap-1">
+                {[0,1,2].map(i => (
+                  <div key={i} className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: `${i * 150}ms` }} />
+                ))}
+              </div>
+              <span className="text-[11px] text-gray-400">Le Coach réfléchit...</span>
             </div>
           </div>
         )}
@@ -324,15 +406,15 @@ function CoachContent() {
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && sendMessage()}
-            placeholder={connected ? "Posez votre question..." : "Configurez votre clé API pour activer le Coach"}
+            onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendMessage()}
+            placeholder={connected ? "Posez votre question au Coach..." : "Configurez votre clé API dans Config"}
             disabled={!connected}
             className="flex-1 text-[12px] outline-none bg-transparent text-gray-700 placeholder-gray-300"
           />
           <button
             onClick={() => sendMessage()}
             disabled={!connected || !input.trim() || loading}
-            className="w-8 h-8 bg-[#111] rounded-full flex items-center justify-center disabled:opacity-30 flex-shrink-0"
+            className="w-8 h-8 bg-[#111] rounded-full flex items-center justify-center disabled:opacity-30 flex-shrink-0 transition-opacity"
           >
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path d="M2 6h8M6 2l4 4-4 4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
