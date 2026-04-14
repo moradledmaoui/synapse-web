@@ -123,6 +123,38 @@ const STRATEGY_CONFIGS: Record<string, StrategyConfig> = {
       { key: "multiplier", label: "Multiplicateur de volume", description: "Le volume actuel doit être X fois supérieur à la moyenne pour déclencher un signal. Plus élevé = cassures plus significatives.", min: 1.5, max: 4.0, step: 0.5, unit: "×", impact: "Force de la cassure requise" },
     ],
   },
+  ichimoku: {
+    id: "ichimoku",
+    name: "Ichimoku Cloud",
+    compliance: [],
+    params: [
+      { key: "tenkan_period", label: "Tenkan (Signal rapide)", description: "Période de la ligne Tenkan-sen. Représente l'équilibre sur la période courte. Standard japonais : 9.", min: 5, max: 15, step: 1, unit: "bougies", impact: "Réactivité du signal" },
+      { key: "kijun_period", label: "Kijun (Signal lent)", description: "Période de la ligne Kijun-sen. Représente l'équilibre sur la période moyenne. Standard japonais : 26.", min: 15, max: 35, step: 1, unit: "bougies", impact: "Tendance de fond" },
+      { key: "senkou_b_period", label: "Senkou B (Cloud lent)", description: "Période du Senkou Span B. Forme le cloud avec Senkou A. Standard japonais : 52.", min: 40, max: 60, step: 2, unit: "bougies", impact: "Épaisseur du cloud" },
+      { key: "displacement", label: "Déplacement", description: "Nombre de bougies de projection du cloud vers le futur. Standard japonais : 26.", min: 20, max: 30, step: 1, unit: "bougies", impact: "Anticipation du support/résistance" },
+    ],
+  },
+  bollinger_squeeze: {
+    id: "bollinger_squeeze",
+    name: "Bollinger Squeeze",
+    compliance: [],
+    params: [
+      { key: "bb_period", label: "Période Bollinger", description: "Fenêtre de calcul des bandes de Bollinger. Plus long = bandes plus stables.", min: 10, max: 30, step: 1, unit: "bougies", impact: "Stabilité des bandes" },
+      { key: "bb_std", label: "Écart-type Bollinger", description: "Largeur des bandes de Bollinger. 2.0 = standard. Plus élevé = moins de signaux mais plus fiables.", min: 1.5, max: 3.0, step: 0.5, unit: "σ", impact: "Sélectivité des signaux" },
+      { key: "kc_mult", label: "Multiplicateur Keltner", description: "Largeur des Keltner Channels. Le squeeze est détecté quand BB est à l'intérieur de KC.", min: 1.0, max: 2.5, step: 0.5, unit: "×ATR", impact: "Sensibilité du squeeze" },
+      { key: "momentum_period", label: "Période momentum", description: "Fenêtre pour mesurer le momentum au moment du breakout. Détermine la direction de l'explosion.", min: 8, max: 20, step: 2, unit: "bougies", impact: "Direction du breakout" },
+    ],
+  },
+  market_structure: {
+    id: "market_structure",
+    name: "Market Structure",
+    compliance: [],
+    params: [
+      { key: "swing_period", label: "Période des swings", description: "Nombre de bougies de chaque côté pour identifier un swing high/low. Plus élevé = swings plus significatifs.", min: 3, max: 10, step: 1, unit: "bougies", impact: "Qualité des niveaux structurels" },
+      { key: "ob_lookback", label: "Lookback Order Blocks", description: "Nombre de bougies dans lesquelles chercher les Order Blocks institutionnels.", min: 5, max: 20, step: 5, unit: "bougies", impact: "Profondeur de l'analyse institutionnelle" },
+      { key: "min_break_pct", label: "Cassure minimale", description: "Pourcentage minimum de cassure au-dessus d'un swing high pour valider un Break of Structure.", min: 0.1, max: 1.0, step: 0.1, unit: "%", impact: "Filtrage des faux breakouts" },
+    ],
+  },
   stochastic_rsi: {
     id: "stochastic_rsi",
     name: "Stochastic RSI",
