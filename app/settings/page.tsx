@@ -13,13 +13,37 @@ export default function Settings() {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
 
-  // Charge le capital actuel
+  // Charge le capital + config risk depuis l'API au démarrage
   useEffect(() => {
+    // Capital
     fetch(`${API_URL}/api/portfolio`)
       .then(r => r.json())
       .then(d => {
         setCapital(d.capital_initial || 10000);
         setCapitalInput(String(d.capital_initial || 10000));
+      })
+      .catch(() => {});
+
+    // Config risk depuis config.yaml via API
+    fetch(`${API_URL}/api/config/risk/current`)
+      .then(r => r.json())
+      .then(d => {
+        if (d.risk) {
+          setRisk({
+            stop_loss: d.risk.stop_loss ?? 2.0,
+            take_profit: d.risk.take_profit ?? 4.0,
+            max_positions: d.risk.max_positions ?? 8,
+            allocation_pct: d.risk.allocation_pct ?? 10.0,
+            max_drawdown: d.risk.max_drawdown ?? 15.0,
+          });
+        }
+        if (d.compliance) {
+          setCompliance({
+            shariah: d.compliance.shariah ?? false,
+            esg: d.compliance.esg ?? false,
+            mifid2: d.compliance.mifid2 ?? false,
+          });
+        }
       })
       .catch(() => {});
   }, []);
