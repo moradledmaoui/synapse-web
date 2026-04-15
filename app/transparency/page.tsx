@@ -247,7 +247,15 @@ export default function TransparencyPage() {
             </div>
           </div>
           <div style={{position:"relative",width:"100%",height:"200px"}}>
-            <canvas ref={chartRef} role="img" aria-label="Courbe équité SYNAPSE vs BTC">Performance SYNAPSE vs BTC</canvas>
+            {trades.length < 3 ? (
+              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"8px"}}>
+                <div style={{fontSize:"12px",color:"var(--color-text-secondary)"}}>Pas encore assez de trades pour afficher la courbe</div>
+                <div style={{fontSize:"11px",color:"var(--color-text-secondary)"}}>La courbe apparaîtra après 3 trades fermés</div>
+                <div style={{fontSize:"11px",color:"var(--color-text-secondary)",fontWeight:"500"}}>{trades.length}/3 trades</div>
+              </div>
+            ) : (
+              <canvas ref={chartRef} role="img" aria-label="Courbe équité SYNAPSE vs BTC">Performance SYNAPSE vs BTC</canvas>
+            )}
           </div>
         </div>
 
