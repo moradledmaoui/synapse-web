@@ -223,12 +223,18 @@ export default function TransparencyPage() {
 
         {/* Courbe équité */}
         <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <div className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Courbe d'équité</div>
-              <div className="flex gap-3 mt-1">
-                <span className="flex items-center gap-1.5 text-[10px] text-gray-500"><span className="w-4 h-0.5 bg-green-500 inline-block"></span>SYNAPSE</span>
-                <span className="flex items-center gap-1.5 text-[10px] text-gray-400"><span className="w-4 inline-block" style={{borderTop:"1.5px dashed #9ca3af"}}></span>BTC normalisé</span>
+              <div className="text-[10px] font-medium text-gray-400 uppercase tracking-wide mb-2">Courbe d'équité (USDT)</div>
+              <div className="flex gap-4">
+                <span className="flex items-center gap-1.5 text-[11px] text-gray-600 font-medium">
+                  <span style={{width:"20px",height:"2px",background:"#16a34a",display:"inline-block",borderRadius:"1px"}}></span>
+                  SYNAPSE
+                </span>
+                <span className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                  <span style={{width:"20px",height:"0",display:"inline-block",borderTop:"2px dashed #9ca3af"}}></span>
+                  BTC buy &amp; hold (normalisé)
+                </span>
               </div>
             </div>
             <div className="flex gap-1 flex-wrap justify-end">
@@ -240,7 +246,7 @@ export default function TransparencyPage() {
               ))}
             </div>
           </div>
-          <div style={{position:"relative",width:"100%",height:"180px"}}>
+          <div style={{position:"relative",width:"100%",height:"200px"}}>
             <canvas ref={chartRef} role="img" aria-label="Courbe équité SYNAPSE vs BTC">Performance SYNAPSE vs BTC</canvas>
           </div>
         </div>
