@@ -183,6 +183,17 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* Indicateur confiance si peu de trades */}
+        {portfolio.total_trades < 100 && (
+          <div className="mx-6 mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <div className="text-[11px] font-medium text-amber-800 mb-1">Statistiques en cours de constitution</div>
+            <div className="text-[10px] text-amber-700 mb-2">{portfolio.total_trades}/100 trades — les métriques seront fiables à 100 trades</div>
+            <div className="h-1 bg-amber-100 rounded-full overflow-hidden">
+              <div className="h-full bg-amber-400 rounded-full" style={{width: `${Math.min(portfolio.total_trades, 100)}%`}}></div>
+            </div>
+          </div>
+        )}
+
         {/* POSITIONS */}
         <div className="px-6 py-4">
           <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-3">

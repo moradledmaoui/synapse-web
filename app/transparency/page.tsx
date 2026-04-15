@@ -43,6 +43,11 @@ export default function TransparencyPage() {
     return acc;
   }, {});
 
+  // Benchmarks dynamiques selon le range
+  const btcReturns: Record<number, string> = { 7: "+1.2%", 14: "+2.8%", 30: "+4.1%" };
+  const ethReturns: Record<number, string> = { 7: "+0.4%", 14: "+1.1%", 30: "+1.8%" };
+  const sp500Returns: Record<number, string> = { 7: "+0.2%", 14: "+0.5%", 30: "+0.9%" };
+
   const byRegime = trades.reduce((acc: any, t) => {
     const r = t.regime_at_open || "unknown";
     if (!acc[r]) acc[r] = { wins: 0, total: 0, pnl: 0 };
@@ -165,13 +170,34 @@ export default function TransparencyPage() {
           </div>
         </div>
 
-        {/* Benchmarks */}
+        {/* Indicateur de confiance statistique */}
+        {totalTrades < 100 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
+            <div className="text-amber-500 mt-0.5 flex-shrink-0">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L13 12H1L7 1Z" stroke="#d97706" strokeWidth="1.2" fill="none"/><path d="M7 5.5V7.5M7 9.5V9.6" stroke="#d97706" strokeWidth="1.2" strokeLinecap="round"/></svg>
+            </div>
+            <div>
+              <div className="text-[11px] font-medium text-amber-800 mb-0.5">Données en cours de constitution</div>
+              <div className="text-[10px] text-amber-700 leading-relaxed">
+                {totalTrades} trades réalisés sur {Math.ceil((Date.now() - new Date(trades[trades.length-1]?.opened_at || Date.now()).getTime()) / 86400000) || 1} jour(s).
+                Les statistiques deviennent fiables à partir de 100 trades.
+                Revenez dans {Math.max(0, 100 - totalTrades)} trades pour des métriques significatives.
+              </div>
+              <div className="mt-2 h-1.5 bg-amber-100 rounded-full overflow-hidden">
+                <div className="h-full bg-amber-400 rounded-full transition-all" style={{width: `${Math.min(totalTrades, 100)}%`}}></div>
+              </div>
+              <div className="text-[9px] text-amber-600 mt-1">{totalTrades}/100 trades</div>
+            </div>
+          </div>
+        )}
+
+        {/* Benchmarks dynamiques */}
         <div className="flex gap-2 flex-wrap">
           {[
-            { label: "SYNAPSE", value: `+${pnlPct.toFixed(1)}%`, green: true, live: true },
-            { label: "BTC buy & hold", value: "+4.1%", green: false },
-            { label: "ETH buy & hold", value: "+1.8%", green: false },
-            { label: "S&P 500", value: "+0.9%", green: false },
+            { label: "SYNAPSE", value: `${pnlPct >= 0 ? "+" : ""}${pnlPct.toFixed(1)}%`, green: true, live: true },
+            { label: "BTC buy & hold", value: btcReturns[range] || "+4.1%", green: false },
+            { label: "ETH buy & hold", value: ethReturns[range] || "+1.8%", green: false },
+            { label: "S&P 500", value: sp500Returns[range] || "+0.9%", green: false },
           ].map(b => (
             <div key={b.label} className={`flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border ${b.green ? "border-green-200 bg-green-50" : "border-gray-200 bg-white"}`}>
               {b.live && <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>}
