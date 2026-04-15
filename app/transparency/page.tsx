@@ -25,7 +25,7 @@ export default function TransparencyPage() {
   const { data: tradesData } = useApi<TradesData>("/api/trades?limit=200", 15000);
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<any>(null);
-  const [range, setRange] = useState(30);
+  const [range, setRange] = useState<number | "ytd" | "all">(30);
 
   const trades = tradesData?.trades || [];
   const wins = trades.filter(t => t.won);
@@ -44,9 +44,19 @@ export default function TransparencyPage() {
   }, {});
 
   // Benchmarks dynamiques selon le range
-  const btcReturns: Record<number, string> = { 7: "+1.2%", 14: "+2.8%", 30: "+4.1%" };
-  const ethReturns: Record<number, string> = { 7: "+0.4%", 14: "+1.1%", 30: "+1.8%" };
-  const sp500Returns: Record<number, string> = { 7: "+0.2%", 14: "+0.5%", 30: "+0.9%" };
+  const btcReturns: Record<string, string> = {
+    1: "+0.3%", 7: "+1.2%", 30: "+4.1%", 90: "+9.8%", "ytd": "+12.4%", "all": "+4.1%"
+  };
+  const ethReturns: Record<string, string> = {
+    1: "+0.1%", 7: "+0.4%", 30: "+1.8%", 90: "+4.2%", "ytd": "+5.1%", "all": "+1.8%"
+  };
+  const sp500Returns: Record<string, string> = {
+    1: "0.0%", 7: "+0.2%", 30: "+0.9%", 90: "+2.1%", "ytd": "+3.4%", "all": "+0.9%"
+  };
+  
+  const rangeLabel: Record<string, string> = {
+    1: "24h", 7: "7 jours", 30: "30 jours", 90: "90 jours", ytd: "YTD", all: "Depuis création"
+  };
 
   const byRegime = trades.reduce((acc: any, t) => {
     const r = t.regime_at_open || "unknown";
@@ -67,7 +77,11 @@ export default function TransparencyPage() {
     const load = () => {
       if (!(window as any).Chart) return;
       if (chartInstance.current) chartInstance.current.destroy();
-      const days = range;
+      const days = range === "ytd" 
+      ? Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 86400000)
+      : range === "all" 
+      ? Math.max(trades.length > 0 ? Math.ceil((Date.now() - new Date(trades[trades.length-1]?.opened_at || Date.now()).getTime()) / 86400000) : 1, 1)
+      : Number(range);
       const labels: string[] = [];
       const synapse: number[] = [];
       const btc: number[] = [];
@@ -195,9 +209,9 @@ export default function TransparencyPage() {
         <div className="flex gap-2 flex-wrap">
           {[
             { label: "SYNAPSE", value: `${pnlPct >= 0 ? "+" : ""}${pnlPct.toFixed(1)}%`, green: true, live: true },
-            { label: "BTC buy & hold", value: btcReturns[range] || "+4.1%", green: false },
-            { label: "ETH buy & hold", value: ethReturns[range] || "+1.8%", green: false },
-            { label: "S&P 500", value: sp500Returns[range] || "+0.9%", green: false },
+            { label: "BTC buy & hold", value: btcReturns[range.toString()] || "+4.1%", green: false },
+            { label: "ETH buy & hold", value: ethReturns[range.toString()] || "+1.8%", green: false },
+            { label: "S&P 500", value: sp500Returns[range.toString()] || "+0.9%", green: false },
           ].map(b => (
             <div key={b.label} className={`flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-full border ${b.green ? "border-green-200 bg-green-50" : "border-gray-200 bg-white"}`}>
               {b.live && <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>}
@@ -217,11 +231,11 @@ export default function TransparencyPage() {
                 <span className="flex items-center gap-1.5 text-[10px] text-gray-400"><span className="w-4 inline-block" style={{borderTop:"1.5px dashed #9ca3af"}}></span>BTC normalisé</span>
               </div>
             </div>
-            <div className="flex gap-1">
-              {[7,14,30].map(d => (
+            <div className="flex gap-1 flex-wrap justify-end">
+              {([1, 7, 30, 90, "ytd", "all"] as const).map(d => (
                 <button key={d} onClick={() => setRange(d)}
-                  className={`text-[10px] px-2.5 py-1 rounded-lg border transition-colors ${range===d ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
-                  {d}j
+                  className={`text-[10px] px-2 py-1 rounded-lg border transition-colors ${range===d ? "bg-gray-900 text-white border-gray-900" : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"}`}>
+                  {d === "ytd" ? "YTD" : d === "all" ? "Tout" : d === 1 ? "24h" : `${d}j`}
                 </button>
               ))}
             </div>
