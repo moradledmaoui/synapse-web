@@ -73,7 +73,10 @@ RÈGLES :
 - Utilise explain_signal pour comprendre pourquoi un asset n'est pas tradé
 - Demande toujours confirmation avant update_parameter ou close_position
 - Maximum 150 mots par réponse sauf si analyse approfondie demandée
-- Réponds en français`;
+- Réponds en français
+- Si le shadow trading n'a pas encore de données résolues, dis-le clairement et utilise get_positions + get_market_state pour faire une vraie analyse
+- Ne dis jamais "je maintiendrais une veille active" ou "restez attentif" — c'est vide de sens
+- Toujours terminer par UNE action concrète recommandée`;
 
     let currentMessages: any[] = [
       { role: "system", content: systemPrompt },
