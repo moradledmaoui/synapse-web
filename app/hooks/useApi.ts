@@ -1,8 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
-
 export function useApi<T>(endpoint: string, refreshInterval?: number) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
@@ -10,18 +8,14 @@ export function useApi<T>(endpoint: string, refreshInterval?: number) {
 
   const fetchData = useCallback(async () => {
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
-      const res = await fetch(`${API_URL}${endpoint}`, { signal: controller.signal });
-      clearTimeout(timeout);
+      // URL relative → passe par le proxy Next.js → VPS
+      const res = await fetch(endpoint);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       setData(json);
       setError(null);
-    } catch (e) {
-      if ((e as Error).name !== "AbortError") {
-        setError((e as Error).message);
-      }
+    } catch (e: any) {
+      setError(e.message);
     } finally {
       setLoading(false);
     }
@@ -30,8 +24,8 @@ export function useApi<T>(endpoint: string, refreshInterval?: number) {
   useEffect(() => {
     fetchData();
     if (refreshInterval) {
-      const interval = setInterval(fetchData, refreshInterval);
-      return () => clearInterval(interval);
+      const id = setInterval(fetchData, refreshInterval);
+      return () => clearInterval(id);
     }
   }, [fetchData, refreshInterval]);
 
