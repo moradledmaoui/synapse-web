@@ -85,7 +85,7 @@ function Sparkline({ symbol, entryPrice }: { symbol: string; entryPrice: number 
           rel="noopener noreferrer"
           className="text-[10px] text-gray-400 underline hover:text-gray-600 transition-colors"
         >
-          Ouvrir sur TradingView ›
+          Ouvrir sur TradingView
         </a>
       </div>
     </div>
