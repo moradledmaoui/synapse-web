@@ -16,6 +16,7 @@ const NAV = [
       { label: "Dashboard", href: "/" },
       { label: "Journal", href: "/journal" },
       { label: "Transparence", href: "/transparency" },
+      { label: "Pépites DEX", href: "/opportunities" },
       // { label: "Backtest", href: "/backtest" }, // Masqué — intégré dans les stratégies
     ],
   },
