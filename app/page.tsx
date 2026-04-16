@@ -174,7 +174,7 @@ function PositionCard({ pos }: { pos: Position }) {
 
       {open && (
         <div className="px-4 pb-4 pt-3 border-t border-gray-100 bg-gray-50 space-y-3">
-          <Sparkline symbol={pos.symbol} entryPrice={pos.entry_price} />
+          <TradingViewLink symbol={pos.symbol} />
           <div className="grid grid-cols-3 gap-2">
             {[
               { label: "Entrée",  value: `$${fmtPrice(pos.entry_price)}` },
