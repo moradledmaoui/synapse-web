@@ -10,13 +10,36 @@ const TABS = [
   { href: "/coach",         label: "Coach",   icon: "◇" },
 ];
 
-export default function BottomNav() {
+export default function Nav() {
   const pathname = usePathname();
   return (
     <>
+      {/* Desktop — sidebar gauche */}
+      <div className="hidden md:flex flex-col fixed left-0 top-0 h-full w-48 bg-white border-r border-gray-200 z-50 py-6 px-3">
+        <div className="mb-8 px-3">
+          <div className="text-sm font-semibold text-gray-900">SYNAPSE</div>
+          <div className="text-[10px] text-gray-400 font-mono mt-0.5">Trading Intelligence</div>
+        </div>
+        <div className="space-y-1 flex-1">
+          {TABS.map((tab) => {
+            const active = pathname === tab.href;
+            return (
+              <Link key={tab.href} href={tab.href}
+                className={"flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-mono transition-colors " + (active ? "bg-gray-100 text-gray-900 font-medium" : "text-gray-400 hover:text-gray-700 hover:bg-gray-50")}>
+                <span className="text-base w-5 text-center">{tab.icon}</span>
+                {tab.label}
+              </Link>
+            );
+          })}
+        </div>
+        <div className="px-3 pt-4 border-t border-gray-100">
+          <div className="text-[9px] text-gray-300 font-mono">v3.0 · Paper Trading</div>
+        </div>
+      </div>
+
       {/* Mobile — bottom bar */}
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-t border-gray-200 md:hidden">
-        <div className="flex items-center justify-around px-2 py-2 max-w-2xl mx-auto">
+        <div className="flex items-center justify-around px-2 py-2">
           {TABS.map((tab) => {
             const active = pathname === tab.href;
             return (
@@ -27,27 +50,6 @@ export default function BottomNav() {
               </Link>
             );
           })}
-        </div>
-      </div>
-
-      {/* Desktop — top nav */}
-      <div className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-2xl mx-auto px-4 flex items-center justify-between py-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-gray-900">SYNAPSE</span>
-            <span className="text-[10px] text-gray-400 font-mono">Trading Intelligence</span>
-          </div>
-          <div className="flex items-center gap-1">
-            {TABS.map((tab) => {
-              const active = pathname === tab.href;
-              return (
-                <Link key={tab.href} href={tab.href}
-                  className={"px-3 py-1.5 rounded-lg text-[12px] font-mono transition-colors " + (active ? "bg-gray-100 text-gray-900 font-semibold" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50")}>
-                  {tab.label}
-                </Link>
-              );
-            })}
-          </div>
         </div>
       </div>
     </>
