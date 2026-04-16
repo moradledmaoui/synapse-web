@@ -320,7 +320,7 @@ export default function Dashboard() {
                         <div className="flex gap-2 items-center">
                           <span className="text-[10px] text-gray-500">Confirmer ?</span>
                           <button onClick={async () => {
-                            await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000"}/api/positions/${pos.symbol}/close`, { method: "POST" });
+                            await fetch(`/api/positions/${pos.symbol}/close`, { method: "POST" });
                             setCloseConfirm(null);
                           }} className="text-[10px] font-bold bg-red-600 text-white px-3 py-1.5 rounded-lg">Oui</button>
                           <button onClick={() => setCloseConfirm(null)}
