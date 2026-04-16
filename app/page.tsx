@@ -1,3 +1,18 @@
+function TradingViewLink({ symbol }: { symbol: string }) {
+  return (
+    <div className="text-right mt-1">
+      
+        href={"https://www.tradingview.com/chart/?symbol=BINANCE:" + symbol}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-[10px] text-gray-400 underline hover:text-gray-600 transition-colors font-mono"
+      >
+        Voir le graphique sur TradingView
+      </a>
+    </div>
+  );
+}
+
 "use client";
 import { useState } from "react";
 import { useApi } from "./hooks/useApi";
