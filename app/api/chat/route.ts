@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,17 +44,17 @@ export async function POST(req: NextRequest) {
     ).join("\n");
 
     const systemPrompt = `Tu es le Coach SYNAPSE — assistant trading personnel expert.
-Tu as accès en temps réel à toutes les données du portfolio.
+Tu as accès en temps réel à toutes les données du portfolio de l'utilisateur.
 Réponds en français. Sois précis, direct et basé sur les vraies données.
 Ne fais jamais de recommandations génériques — utilise toujours les données réelles.
 
 === PORTFOLIO ACTUEL ===
-Capital libre    : ${portfolio.capital?.toFixed(2)} USDT
-Valeur totale    : ${portfolio.total_value?.toFixed(2)} USDT
-P&L réalisé      : ${portfolio.pnl_usdt?.toFixed(2)} USDT (${portfolio.pnl_pct?.toFixed(2)}%)
-P&L latent       : ${portfolio.latent_pnl?.toFixed(2)} USDT
-Drawdown actuel  : ${portfolio.drawdown_pct?.toFixed(2)}%
-Positions ouv.   : ${portfolio.open_positions}
+Capital libre    : ${(portfolio.capital||0).toFixed(2)} USDT
+Valeur totale    : ${(portfolio.total_value||0).toFixed(2)} USDT
+P&L réalisé      : ${(portfolio.pnl_usdt||0).toFixed(2)} USDT (${(portfolio.pnl_pct||0).toFixed(2)}%)
+P&L latent       : ${(portfolio.latent_pnl||0).toFixed(2)} USDT
+Drawdown actuel  : ${(portfolio.drawdown_pct||0).toFixed(2)}%
+Positions ouv.   : ${portfolio.open_positions || 0}
 Win rate global  : ${winRate}% sur ${trades.length} trades
 
 === RÉGIME DE MARCHÉ ACTUEL ===
@@ -88,25 +88,30 @@ ${trades.slice(0, 5).map((t: any) =>
 - Donne des recommandations concrètes et actionnables
 - Mentionne toujours les données sur lesquelles tu bases ton analyse`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    // Appel OpenAI GPT-4o
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "gpt-4o",
         max_tokens: 1000,
-        system: systemPrompt,
-        messages: messages,
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages,
+        ],
       }),
     });
 
-    if (!response.ok) throw new Error(`Anthropic API error: ${response.status}`);
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(`OpenAI API error: ${response.status} — ${err}`);
+    }
 
     const data = await response.json();
-    const text = data.content?.[0]?.text || "Erreur de réponse";
+    const text = data.choices?.[0]?.message?.content || "Erreur de réponse";
 
     return NextResponse.json({ message: text });
 
