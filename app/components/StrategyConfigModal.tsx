@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import ConsentModal from "./ConsentModal";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API_URL = "";
 
 interface StrategyParam {
   key: string;

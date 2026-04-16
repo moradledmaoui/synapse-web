@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API_URL = "";
 
 const UNIVERSES = [
   { id: "top20", label: "Top 20", desc: "Les 20 plus grandes cryptos" },

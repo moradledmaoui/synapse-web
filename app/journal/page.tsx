@@ -3,7 +3,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useApi } from "../hooks/useApi";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API_URL = "";
 
 interface Trade {
   symbol: string;

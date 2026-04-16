@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API_URL = "";
 
 export default function Settings() {
   const [saved, setSaved] = useState(false);
@@ -11,7 +11,7 @@ export default function Settings() {
   const [capitalInput, setCapitalInput] = useState("10000");
   const [capitalSaved, setCapitalSaved] = useState(false);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+  const API_URL = "";
 
   // Charge le capital + config risk depuis l'API au démarrage
   useEffect(() => {

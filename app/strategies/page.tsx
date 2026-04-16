@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import StrategyConfigModal from "../components/StrategyConfigModal";
 import { useApi } from "../hooks/useApi";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API_URL = "";
 
 interface Strategy {
   id: string;

@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useApi } from "../hooks/useApi";
 import { useEffect, useRef, useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API_URL = "";
 
 interface Portfolio {
   total_value: number;
