@@ -8,6 +8,7 @@ interface Portfolio {
   capital_initial: number;
   pnl_usdt: number;
   pnl_pct: number;
+  open_positions?: number;
   drawdown_pct: number;
   win_rate: number;
   total_trades: number;
@@ -158,7 +159,7 @@ export default function Dashboard() {
         {/* STATS */}
         <div className="bg-[#111] px-6 pb-4 grid grid-cols-4 gap-2">
           {[
-            { label: "Positions", value: `${portfolio.positions_count}/${portfolio.max_positions}` },
+            { label: "Positions", value: `${portfolio.open_positions || 0}` },
             { label: "Win Rate", value: `${portfolio.win_rate}%` },
             { label: "Drawdown", value: `${portfolio.drawdown_pct}%` },
             { label: "ADX", value: adx ? `${adx.toFixed(0)}` : "—" },
