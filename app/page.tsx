@@ -1,5 +1,8 @@
 "use client";
+import { useState } from "react";
 import { useApi } from "./hooks/useApi";
+import { Header } from "./components/Header";
+import { PositionCard } from "./components/PositionCard";
 
 interface Portfolio {
   capital: number;
@@ -7,177 +10,305 @@ interface Portfolio {
   total_value: number;
   pnl_usdt: number;
   pnl_pct: number;
-  peak_capital: number;
+  latent_pnl: number;
   drawdown_pct: number;
   win_rate: number;
   total_trades: number;
   open_positions: number;
-  latent_pnl: number;
   kill_switch: boolean;
   regime: string;
   regime_data: any;
 }
 
-interface Position {
-  id: number;
-  symbol: string;
-  side: string;
-  entry_price: number;
-  current_price: number;
-  size_usdt: number;
-  pnl_usdt: number;
-  pnl_pct: number;
-  strategy: string;
-  opportunity_score: number;
-  regime_at_open: string;
-  opened_at: string;
-  stop_loss: number;
-  take_profit: number;
+interface PositionsData {
+  positions: any[];
+  total_pnl: number;
 }
 
-interface PositionsData { positions: Position[]; total_pnl: number; }
-
-function fmt(n: number | undefined, decimals = 2): string {
-  if (n === undefined || n === null || isNaN(n)) return "—";
-  return n.toFixed(decimals);
+interface DexPortfolio {
+  positions: any[];
+  total_positions: number;
+  total_invested: number;
+  total_pnl: number;
 }
 
-function fmtPrice(p: number | undefined): string {
-  if (!p) return "—";
-  if (p < 0.0001) return p.toFixed(8);
-  if (p < 0.01) return p.toFixed(6);
-  if (p < 1) return p.toFixed(4);
-  return p.toFixed(2);
+interface Sentiment {
+  summary: {
+    fear_greed_value: number;
+    fear_greed_label: string;
+    btc_dominance_pct: number;
+    dominance_signal: string;
+    funding_sentiment: string;
+  };
 }
 
-const REGIME_COLORS: Record<string, string> = {
-  trending_strong: "text-green-400 border-green-400",
-  trending_weak:   "text-green-300 border-green-300",
-  ranging:         "text-yellow-400 border-yellow-400",
-  breakout:        "text-blue-400 border-blue-400",
-  volatile:        "text-orange-400 border-orange-400",
-  bear:            "text-red-400 border-red-400",
-  panic:           "text-red-600 border-red-600",
-};
+function MarketContext({ sentiment, regime }: { sentiment: any; regime: any }) {
+  const fg   = sentiment?.summary?.fear_greed_value || 50;
+  const dom  = sentiment?.summary?.btc_dominance_pct || 50;
+  const fund = sentiment?.summary?.funding_sentiment || "neutre";
+  const adx  = regime?.adx || 0;
+  const sq   = regime?.squeeze || false;
 
-export default function DashboardPage() {
-  const { data: portfolio, loading: pLoading } = useApi<Portfolio>("/api/portfolio", 10000);
-  const { data: posData } = useApi<PositionsData>("/api/positions", 10000);
+  const fgEmoji = fg < 20 ? "😨" : fg < 40 ? "😟" : fg < 60 ? "😐" : fg < 80 ? "🙂" : "🤑";
+  const fgColor = fg < 25 ? "#FF4444" : fg < 45 ? "#F97316" : fg > 75 ? "#00D4AA" : "#F59E0B";
 
-  const positions = posData?.positions || [];
-  const regimeColor = REGIME_COLORS[portfolio?.regime || ""] || "text-gray-400 border-gray-400";
-  const pnlUp = (portfolio?.pnl_usdt || 0) >= 0;
-  const adx = portfolio?.regime_data?.adx;
-  const confidence = portfolio?.regime_data?.confidence || 0;
-
-  if (pLoading) return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-      <div className="text-gray-500 text-sm">Connexion au moteur...</div>
+  return (
+    <div className="mx-5 mb-4 rounded-2xl border border-[#21262D] bg-[#0D1117] p-4">
+      <div className="text-[10px] text-[#8B949E] uppercase tracking-widest mb-3">Contexte marché</div>
+      <div className="flex items-center gap-4">
+        <div className="flex-1 text-center">
+          <div className="text-lg">{fgEmoji}</div>
+          <div className="font-mono text-[15px] font-bold mt-0.5" style={{ color: fgColor }}>{fg}</div>
+          <div className="text-[9px] text-[#8B949E] mt-0.5">Fear & Greed</div>
+        </div>
+        <div className="w-px h-10 bg-[#21262D]" />
+        <div className="flex-1 text-center">
+          <div className="font-mono text-[15px] font-bold text-[#E6EDF3]">{dom?.toFixed(1)}%</div>
+          <div className="text-[9px] text-[#8B949E] mt-1">BTC Dom</div>
+        </div>
+        <div className="w-px h-10 bg-[#21262D]" />
+        <div className="flex-1 text-center">
+          <div className="font-mono text-[15px] font-bold text-[#E6EDF3]">{adx?.toFixed(0)}</div>
+          <div className="text-[9px] text-[#8B949E] mt-1">ADX</div>
+        </div>
+        <div className="w-px h-10 bg-[#21262D]" />
+        <div className="flex-1 text-center">
+          <div className={`text-[13px] font-bold ${sq ? "text-[#F59E0B]" : "text-[#8B949E]"}`}>
+            {sq ? "💥" : "·"}
+          </div>
+          <div className="text-[9px] text-[#8B949E] mt-1">Squeeze</div>
+        </div>
+      </div>
+      {fg < 25 && (
+        <div className="mt-3 pt-3 border-t border-[#21262D] text-[10px] text-[#F59E0B]">
+          ⚡ Peur Extrême — historiquement favorable aux entrées DEX
+        </div>
+      )}
+      {sq && (
+        <div className="mt-3 pt-3 border-t border-[#21262D] text-[10px] text-[#3B82F6]">
+          💥 Squeeze actif — explosion de volatilité imminente
+        </div>
+      )}
     </div>
   );
+}
+
+function DexPositionCard({ pos }: { pos: any }) {
+  const [expanded, setExpanded] = useState(false);
+  const x = parseFloat(pos.x_multiplier || 1);
+  const target = parseFloat(pos.target_x2 || 0);
+  const current = parseFloat(pos.current_price || pos.entry_price || 0);
+  const entry = parseFloat(pos.entry_price || 0);
+  const progressPct = entry > 0 ? Math.min(100, ((current - entry) / (target - entry)) * 100) : 0;
+  const pnl = parseFloat(pos.pnl_usdt || 0);
+  const up  = pnl >= 0;
+
+  return (
+    <div className="rounded-2xl border border-[#21262D] bg-[#0D1117] overflow-hidden">
+      <button className="w-full px-4 pt-4 pb-3 text-left" onClick={() => setExpanded(!expanded)}>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#F59E0B] to-[#F97316] flex items-center justify-center flex-shrink-0">
+            <span className="text-[9px] font-black text-white">💎</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[13px] font-semibold text-[#E6EDF3]">
+                {pos.symbol}
+              </span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#F59E0B15] text-[#F59E0B] font-mono">
+                {pos.network?.toUpperCase()}
+              </span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#8B949E15] text-[#8B949E]">
+                SIM
+              </span>
+            </div>
+            <div className="text-[10px] text-[#8B949E] mt-0.5">
+              ${parseFloat(pos.size_usdt || 0).toFixed(0)} investi · Target ×2
+            </div>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <div className={`font-mono text-[13px] font-semibold ${up ? "text-[#00D4AA]" : "text-[#8B949E]"}`}>
+              {x.toFixed(2)}×
+            </div>
+            <div className="text-[10px] font-mono text-[#8B949E]">
+              {pnl >= 0 ? "+" : ""}{pnl.toFixed(2)} USDT
+            </div>
+          </div>
+        </div>
+
+        {/* Barre progression vers X2 */}
+        <div className="mt-3">
+          <div className="h-1 bg-[#21262D] rounded-full overflow-hidden">
+            <div className="h-full rounded-full bg-gradient-to-r from-[#F59E0B] to-[#00D4AA] transition-all duration-1000"
+              style={{ width: `${Math.max(2, progressPct)}%` }} />
+          </div>
+          <div className="flex justify-between mt-1.5">
+            <span className="text-[9px] font-mono text-[#8B949E]">
+              ${entry.toFixed(entry < 0.001 ? 8 : 4)}
+            </span>
+            <span className="text-[9px] font-mono text-[#F59E0B]">
+              {progressPct.toFixed(0)}% vers ×2
+            </span>
+            <span className="text-[9px] font-mono text-[#00D4AA]">
+              ${target.toFixed(target < 0.001 ? 8 : 4)}
+            </span>
+          </div>
+        </div>
+      </button>
+
+      {expanded && (
+        <div className="px-4 pb-4 border-t border-[#21262D] pt-3">
+          <div className="text-[10px] text-[#8B949E] leading-relaxed">
+            Position simulée · Mis à jour toutes les heures via GeckoTerminal.
+            À ×2 : récupère ${ (parseFloat(pos.size_usdt||0)/2).toFixed(0) } USDT et laisse courir le reliquat.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SignalStatus({ regime, positions }: { regime: any; positions: any[] }) {
+  const sq  = regime?.squeeze || false;
+  const adx = regime?.adx || 0;
+
+  return (
+    <div className="mx-5 mb-4 rounded-2xl border border-[#21262D] bg-[#0D1117] p-4">
+      <div className="flex items-center gap-3">
+        <div className={`w-2 h-2 rounded-full ${sq ? "bg-[#F59E0B] animate-pulse" : "bg-[#8B949E]"}`} />
+        <div className="flex-1">
+          <div className="text-[11px] font-medium text-[#E6EDF3]">
+            {sq
+              ? "Squeeze actif — signal imminent"
+              : adx > 35
+              ? "Tendance présente — analyse en cours"
+              : "Marché en chop — en attente de signal"
+            }
+          </div>
+          <div className="text-[10px] text-[#8B949E] mt-0.5">
+            {positions.length} positions ouvertes · prochain cycle à la bougie 1h
+          </div>
+        </div>
+        <div className="text-[10px] font-mono text-[#8B949E]">
+          ADX {adx?.toFixed(0)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Home() {
+  const { data: portfolio } = useApi<Portfolio>("/api/portfolio", 10000);
+  const { data: posData }   = useApi<PositionsData>("/api/positions", 10000);
+  const { data: dexData }   = useApi<DexPortfolio>("/api/dex/positions", 60000);
+  const { data: sentiment } = useApi<Sentiment>("/api/sentiment", 300000);
+
+  const positions = posData?.positions || [];
+  const dexPositions = dexData?.positions || [];
+  const regime = portfolio?.regime_data || {};
+
+  async function handleClose(symbol: string) {
+    if (!confirm(`Fermer la position ${symbol} ?`)) return;
+    await fetch(`/api/close/${symbol}`, { method: "POST" });
+  }
 
   if (!portfolio) return (
-    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-      <div className="text-red-400 text-sm">API non disponible</div>
+    <div className="min-h-screen bg-[#080B0F] flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-8 h-8 rounded-lg bg-[#00D4AA] flex items-center justify-center mx-auto mb-3">
+          <span className="text-[#080B0F] text-[12px] font-black">S</span>
+        </div>
+        <div className="text-[#8B949E] text-[12px]">Connexion au moteur...</div>
+      </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white px-6 py-6 pb-24">
+    <div className="min-h-screen bg-[#080B0F] text-[#E6EDF3]">
+      <Header portfolio={portfolio} />
 
-      {/* Header */}
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Portfolio</div>
-          <div className={`font-mono text-3xl font-medium ${pnlUp ? "text-green-400" : "text-red-400"}`}>
-            {pnlUp ? "+" : ""}{fmt(portfolio.pnl_usdt)} USDT
-          </div>
-          <div className={`text-sm mt-1 ${pnlUp ? "text-green-500" : "text-red-500"}`}>
-            {pnlUp ? "+" : ""}{fmt(portfolio.pnl_pct)}% · {fmt(portfolio.total_value)} USDT total
-          </div>
-        </div>
-        <div className={`border rounded-lg px-3 py-1.5 text-[11px] font-bold ${regimeColor}`}>
-          {(portfolio.regime || "—").toUpperCase()}
-        </div>
-      </div>
+      <div className="pt-4 pb-28 space-y-4">
 
-      {/* Métriques */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        {[
-          { label: "Capital libre", value: `${fmt(portfolio.capital, 0)} USDT` },
-          { label: "P&L latent", value: `${(portfolio.latent_pnl||0) >= 0 ? "+" : ""}${fmt(portfolio.latent_pnl)} USDT`, color: (portfolio.latent_pnl||0) >= 0 ? "text-green-400" : "text-red-400" },
-          { label: "Positions", value: `${portfolio.open_positions}` },
-          { label: "Win rate", value: `${fmt(portfolio.win_rate, 1)}%` },
-          { label: "Drawdown", value: `${fmt(portfolio.drawdown_pct)}%`, color: (portfolio.drawdown_pct||0) > 5 ? "text-red-400" : "text-gray-300" },
-          { label: "ADX", value: adx ? `${fmt(adx, 0)}` : "—" },
-          { label: "Trades fermés", value: `${portfolio.total_trades}` },
-          { label: "Confiance", value: `${fmt(confidence * 100, 0)}%` },
-        ].map(m => (
-          <div key={m.label} className="bg-[#141414] border border-[#222] rounded-xl px-4 py-3">
-            <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">{m.label}</div>
-            <div className={`font-mono text-base font-medium ${m.color || "text-white"}`}>{m.value}</div>
-          </div>
-        ))}
-      </div>
+        {/* Contexte marché */}
+        <MarketContext sentiment={sentiment} regime={regime} />
 
-      {/* Positions */}
-      <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-3">Positions ouvertes</div>
-      {positions.length === 0 ? (
-        <div className="bg-[#141414] border border-[#222] rounded-xl px-4 py-8 text-center text-gray-500 text-sm">
-          Aucune position ouverte
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {positions.map(pos => {
-            const pnlUp = (pos.pnl_pct || 0) >= 0;
-            return (
-              <div key={pos.id} className="bg-[#141414] border border-[#222] rounded-xl px-4 py-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="font-mono text-sm font-medium">
-                      {pos.symbol.replace("USDT", "/USDT")}
-                    </div>
-                    <div className="text-[10px] text-gray-500 mt-0.5">
-                      {(pos.strategy || "").replace(/_/g, " ").toUpperCase()} · {pos.regime_at_open?.toUpperCase()}
-                    </div>
-                  </div>
-                  <div className={`font-mono text-sm font-medium ${pnlUp ? "text-green-400" : "text-red-400"}`}>
-                    {pnlUp ? "+" : ""}{fmt(pos.pnl_usdt)} USDT
-                    <span className="text-[10px] opacity-60 ml-1">({pnlUp ? "+" : ""}{fmt(pos.pnl_pct)}%)</span>
-                  </div>
-                </div>
+        {/* Signal status */}
+        <SignalStatus regime={regime} positions={positions} />
 
-                <div className="grid grid-cols-3 gap-2 mb-3">
-                  {[
-                    { label: "Entrée", value: fmtPrice(pos.entry_price) },
-                    { label: "Actuel", value: fmtPrice(pos.current_price), color: pnlUp ? "text-green-400" : "text-red-400" },
-                    { label: "Taille", value: `${fmt(pos.size_usdt, 0)} USDT` },
-                  ].map(f => (
-                    <div key={f.label} className="bg-[#1a1a1a] rounded-lg px-2.5 py-2">
-                      <div className="text-[9px] text-gray-500 uppercase mb-0.5">{f.label}</div>
-                      <div className={`font-mono text-[11px] font-medium ${f.color || "text-white"}`}>{f.value}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* SL/TP bar */}
-                <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-red-400">SL {fmtPrice(pos.stop_loss)}</span>
-                  <span className="text-gray-500">Score {fmt(pos.opportunity_score, 0)}/100</span>
-                  <span className="text-green-400">TP {fmtPrice(pos.take_profit)}</span>
-                </div>
+        {/* Positions CEX */}
+        <div className="px-5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-[11px] text-[#8B949E] uppercase tracking-widest">
+              Positions CEX
+            </div>
+            <div className="flex items-center gap-2">
+              <div className={`text-[11px] font-mono font-medium ${
+                (posData?.total_pnl || 0) >= 0 ? "text-[#00D4AA]" : "text-[#FF4444]"
+              }`}>
+                {(posData?.total_pnl || 0) >= 0 ? "+" : ""}
+                {(posData?.total_pnl || 0).toFixed(2)} USDT
               </div>
-            );
-          })}
-        </div>
-      )}
+              <div className="text-[10px] text-[#8B949E]">
+                {positions.length} open
+              </div>
+            </div>
+          </div>
 
-      {/* P&L latent total */}
-      {positions.length > 0 && (
-        <div className={`mt-4 text-center font-mono text-sm font-medium ${(posData?.total_pnl||0) >= 0 ? "text-green-400" : "text-red-400"}`}>
-          P&L latent total : {(posData?.total_pnl||0) >= 0 ? "+" : ""}{fmt(posData?.total_pnl)} USDT
+          {positions.length === 0 ? (
+            <div className="rounded-2xl border border-[#21262D] bg-[#0D1117] p-8 text-center">
+              <div className="text-[#8B949E] text-[12px]">Aucune position CEX ouverte</div>
+              <div className="text-[10px] text-[#8B949E] mt-1 opacity-60">
+                En attente du prochain signal...
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {positions.map(pos => (
+                <PositionCard key={pos.id} pos={pos} onClose={handleClose} />
+              ))}
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Positions DEX */}
+        {dexPositions.length > 0 && (
+          <div className="px-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="text-[11px] text-[#8B949E] uppercase tracking-widest">
+                Pépites DEX <span className="text-[#F59E0B]">· Simulation</span>
+              </div>
+              <div className="text-[11px] font-mono text-[#8B949E]">
+                ${(dexData?.total_invested || 0).toFixed(0)} investi
+              </div>
+            </div>
+            <div className="space-y-3">
+              {dexPositions.map((pos, i) => (
+                <DexPositionCard key={i} pos={pos} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Stats rapides */}
+        <div className="px-5">
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { label: "Capital libre",  value: `$${(portfolio.capital/1000).toFixed(1)}k`, sub: "USDT" },
+              { label: "Win Rate",       value: `${portfolio.win_rate || 0}%`,               sub: `${portfolio.total_trades} trades` },
+              { label: "Drawdown",       value: `${portfolio.drawdown_pct?.toFixed(1)}%`,   sub: "depuis le pic", color: (portfolio.drawdown_pct || 0) > 5 ? "#FF4444" : undefined },
+            ].map(s => (
+              <div key={s.label} className="rounded-2xl border border-[#21262D] bg-[#0D1117] px-3 py-3 text-center">
+                <div className="text-[9px] text-[#8B949E] uppercase tracking-wide mb-1">{s.label}</div>
+                <div className="font-mono text-[14px] font-semibold" style={{ color: s.color || "#E6EDF3" }}>
+                  {s.value}
+                </div>
+                <div className="text-[9px] text-[#8B949E] mt-0.5">{s.sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

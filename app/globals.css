@@ -1,26 +1,43 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --accent:    #00D4AA;
+  --danger:    #FF4444;
+  --warning:   #F59E0B;
+  --info:      #3B82F6;
+  --bg:        #080B0F;
+  --surface:   #0D1117;
+  --border:    #21262D;
+  --text:      #E6EDF3;
+  --muted:     #8B949E;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geist', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
+
+.font-mono {
+  font-family: 'DM Mono', 'Fira Code', monospace;
+}
+
+/* Scrollbar minimaliste */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Safe area pour les téléphones */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+
+/* Animation pulse pour le squeeze */
+@keyframes pulse-accent {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse-accent { animation: pulse-accent 2s ease-in-out infinite; }
