@@ -79,7 +79,7 @@ function Sparkline({ symbol, entryPrice }: { symbol: string; entryPrice: number 
         </div>
       </div>
       <div className="mt-1.5 text-right">
-        
+        <a
           href={`https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`}
           target="_blank"
           rel="noopener noreferrer"
