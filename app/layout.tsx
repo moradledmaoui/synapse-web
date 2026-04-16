@@ -3,8 +3,8 @@ import { JetBrains_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import BottomNav from "./components/BottomNav";
 
-const inter = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
-const sans = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const mono  = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
   title: "SYNAPSE",
@@ -14,11 +14,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <body className={sans.variable + " " + inter.variable + " font-sans bg-gray-50"}>
-        <main className="max-w-lg mx-auto">
+      <body className={inter.variable + " " + mono.variable + " font-sans bg-gray-50"}>
+        <main className="w-full max-w-2xl mx-auto px-0 md:px-4 md:pt-16 md:pb-6">
           {children}
         </main>
-        <div className="max-w-lg mx-auto">
+        <div className="w-full max-w-2xl mx-auto">
           <BottomNav />
         </div>
       </body>
