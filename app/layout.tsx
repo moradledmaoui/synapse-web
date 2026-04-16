@@ -1,24 +1,34 @@
 import type { Metadata } from "next";
-import { BottomNav } from "./components/BottomNav";
+import { JetBrains_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import Sidebar from "./components/Sidebar";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: "SYNAPSE — Trading Intelligence",
-  description: "Plateforme de trading algorithmique crypto",
-  viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
+  title: "SYNAPSE Terminal",
+  description: "Plateforme de trading algorithmique intelligente",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-      </head>
-      <body className="bg-[#080B0F] text-[#E6EDF3] antialiased" style={{ fontFamily: "'Geist', sans-serif" }}>
-        {children}
-        <BottomNav />
+      <body className={`${inter.variable} ${jetbrains.variable} font-sans bg-gray-100`}>
+        <div className="flex h-screen overflow-hidden">
+          {/* Sidebar — cachée sur mobile via CSS */}
+          <div className="hidden md:flex">
+            <Sidebar />
+          </div>
+          {/* Sidebar mobile — rendue par le composant lui-même */}
+          <div className="flex md:hidden">
+            <Sidebar />
+          </div>
+          {/* Contenu principal */}
+          <main className="flex-1 overflow-y-auto pt-14 md:pt-0 pb-16 md:pb-0">
+            {children}
+          </main>
+        </div>
       </body>
     </html>
   );
