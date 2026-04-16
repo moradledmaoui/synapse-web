@@ -17,6 +17,7 @@ const NAV = [
       { label: "Journal", href: "/journal" },
       { label: "Transparence", href: "/transparency" },
       { label: "Pépites DEX", href: "/opportunities" },
+      { label: "Univers", href: "/universes" },
       // { label: "Backtest", href: "/backtest" }, // Masqué — intégré dans les stratégies
     ],
   },
