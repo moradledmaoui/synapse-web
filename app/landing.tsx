@@ -8,244 +8,215 @@ export default function Landing() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
 
-  const t = {
-    en: {
-      nav: ["Features","Shariah","Performance","Pricing","DEX Lab"],
-      badge: "Algorithmic trading · Shariah compliant · Available now",
-      h1a: "The algorithm that",
-      h1b: "trades for you",
-      sub: "6Napse combines 6 layers of artificial intelligence to detect, score and execute trades with hedge fund precision — 24 hours a day, fully automated. Built for every trader, with native Shariah compliance.",
-      trust: ["Free simulation forever","Shariah compliant mode","No credit card needed"],
-      cta1: "Start for free", cta2: "See how it works",
-      t1:"regime →", t2:"universe →", t3:"signal", t4:"confirm ×", t5:"sizing →", t6:"opened", t7:"later →", t8:"next signal",
-      tv1:"RANGING", tv2:"accumulation", tv3:"BUY SOLUSDT", tv4:"1.20", tv5:"$2,266 USDT", tv6:"SL · TP · trailing:2.0 ATR", tv7:"TP reached · profit booked", tv8:"scanning markets",
-      tk1:"ADX:18 | Squeeze:true", tk2:"Shariah filter: ON", tk3:"score:63.8/100", tk4:"CMF:0.12 | MTF:bullish", tk5:"risk:1% ATR:2.1%",
-      sp: [
-        {v:"Automated",l:"24/7 trading engine",s:"No manual intervention needed"},
-        {v:"8 regimes",l:"Market intelligence",s:"Adaptive to any market condition"},
-        {v:"18 strategies",l:"Signal generation",s:"Multi-timeframe · 5m to 4h"},
-        {v:"Shariah",l:"Compliant mode",s:"Native ethical screening"},
-      ],
-      how_eyebrow:"How it works", how_h:"6 neurons.\n1 decision.", how_sub:"Every trade passes through 6 intelligence layers before execution. No shortcuts, no guessing — pure systematic logic running 24 hours a day.",
-      neurons:[
-        {n:"01",title:"Market regime",desc:"8 states detected in real time: trending, ranging, pre-breakout, breakout, volatile, bear, panic, squeeze."},
-        {n:"02",title:"Asset universe",desc:"6 data-driven pools selected per regime. Shariah filter applied natively before any signal generation."},
-        {n:"03",title:"Signal generation",desc:"18 strategies filtered by regime. Multi-timeframe: 5m detection, 15m validation, 1h decision, 4h macro veto."},
-        {n:"04",title:"Opportunity score",desc:"7-dimensional conviction: signal strength, regime confidence, sentiment, volume, ATR, MTF bias, squeeze."},
-        {n:"05",title:"Risk calibration",desc:"Fixed fractional 1% per trade with drawdown adaptive multipliers and factorial correlation limits."},
-        {n:"06",title:"Smart execution",desc:"Automatic SL/TP, ATR trailing stop, real-time monitoring. Three engines running simultaneously."},
-      ],
-      prod_eyebrow:"Products", prod_h:"Three trading engines.", prod_sub:"Each engine optimized for a different time horizon and risk profile — running simultaneously with isolated capital.",
-      products:[
-        {tag:"Active · Binance SPOT",title:"CEX Swing",desc:"Automated swing trading using mean reversion, market structure and momentum strategies. Automatic SL/TP and trailing stop. Shariah-compliant asset filter available.",stats:[{v:"18",l:"strategies"},{v:"8",l:"regimes"},{v:"1%",l:"risk/trade"}]},
-        {tag:"Active · Isolated capital",title:"Scalp Book",desc:"High-frequency scalping on 5m and 15m timeframes with dedicated isolated portfolio. Entry timing engine for optimal price. Positions of 5 to 30 minutes with automatic timeout.",stats:[{v:"5m",l:"timeframe"},{v:"5",l:"max positions"},{v:"30m",l:"timeout"}]},
-        {tag:"Phase 1 · Base + Solana",title:"DEX Lab",desc:"On-chain gem detection on Base and Solana. Flow-driven scoring: absorption signal, buyer quality index, GoPlus security screening, age and velocity analysis.",stats:[{v:"2",l:"chains"},{v:"30m",l:"scan cycle"},{v:"H+3",l:"decision"}]},
-      ],
-      shariah_eyebrow:"Ethical compliance",
-      shariah_h:"Trading that respects\nyour values",
-      shariah_sub:"6Napse is the first algorithmic trading platform with native Shariah compliance. No workaround, no manual filtering — the engine screens every asset automatically before any position is opened.",
-      shariah_feats:[
-        {title:"Automatic asset screening",desc:"Alcohol, tobacco, weapons, conventional banking, pork and gambling are filtered at the universe level — before any signal is generated."},
-        {title:"No riba (interest)",desc:"SPOT-only trading with no margin, no leverage and no overnight interest — fully aligned with Islamic finance principles."},
-        {title:"Continuous compliance",desc:"The Shariah filter re-applies at every engine cycle. If an asset becomes non-compliant, it is removed from the universe automatically."},
-        {title:"One toggle, full compliance",desc:"Activate Shariah mode in your profile. The entire engine adapts instantly — no configuration, no compromise."},
-      ],
-      shariah_cta:"Enable Shariah mode",
-      shariah_market_title:"ISLAMIC FINANCE MARKET · 2026",
-      shariah_markets:[
-        {color:"#10b981",name:"Middle East & GCC",region:"Saudi Arabia · UAE · Qatar · Kuwait",val:"$1.9T"},
-        {color:"#3b82f6",name:"Southeast Asia",region:"Malaysia · Indonesia · Brunei",val:"$0.8T"},
-        {color:"#a78bfa",name:"Europe · diaspora",region:"UK · France · Germany · Belgium",val:"$0.5T"},
-        {color:"#f59e0b",name:"North Africa",region:"Morocco · Egypt · Tunisia · Algeria",val:"$0.4T"},
-      ],
-      shariah_total_label:"Total addressable market",
-      shariah_total:"$3.6 trillion",
-      perf_eyebrow:"Performance",
-      perf_h:"Real results.\nFull transparency.",
-      perf_sub:"We believe in radical transparency. A public performance dashboard is coming — tracking real trader results across all strategies, regimes and market conditions.",
-      perf_feats:[
-        {title:"Live P&L tracking",desc:"Real-time portfolio value, realized and unrealized gains across all active strategies and regimes."},
-        {title:"Strategy-level analytics",desc:"Win rate, expectancy and drawdown broken down by strategy, regime and time period."},
-        {title:"Cross-trader benchmarking",desc:"Compare your performance against anonymized aggregate data from the entire 6Napse community."},
-      ],
-      waitlist_h:"Join the waitlist",
-      waitlist_p:"Be among the first to access the public performance dashboard. One email when it launches, no spam.",
-      waitlist_ph:"your@email.com",
-      waitlist_cta:"Notify me",
-      waitlist_sent:"You are on the list",
-      price_eyebrow:"Pricing",
-      price_h:"Start free.\nGo live when\nyou are ready.",
-      price_sub:"No credit card required for simulation. Upgrade to live trading only when your readiness checklist is fully validated.",
-      plans:[
-        {tier:"FREE",price:"€0",per:"/month",line:"Simulation mode. No risk, no credit card. Full access to every feature and strategy.",feats:["Virtual capital $50,000 USDT","All 18 trading strategies","Full dashboard + journal","DEX Lab Phase 1 — Base + Solana","Telegram + Email alerts","Shariah compliant mode"],cta:"Get started — free",featured:false},
-        {tier:"PRO",price:"€49",per:"/month",line:"Live trading with your real Binance capital. Unlocks when your checklist is complete.",feats:["Everything in Free","Live mode — Binance SPOT","Capital up to €50,000","Scalp book fully activated","Priority support — 24h response","1 year full performance history"],cta:"Start Pro",featured:true},
-        {tier:"ELITE",price:"€149",per:"/month",line:"For serious traders, family offices and fund managers who need scale and control.",feats:["Everything in Pro","Up to 5 independent accounts","Unlimited trading capital","Multi-CEX: Binance + Coinbase + Kraken","DEX Lab Phase 2 — wallet intelligence","API access + webhooks"],cta:"Contact us",featured:false},
-      ],
-      faq_eyebrow:"FAQ", faq_h:"Common questions.", faq_sub:"Everything you need to know before getting started. Still have questions? We answer within 24 hours.",
-      faqs:[
-        {q:"Can I lose money in simulation mode?",a:"No. Simulation uses virtual capital only. You can test all strategies without any financial risk. The live toggle only unlocks when your readiness checklist is fully validated."},
-        {q:"How is 6Napse different from 3Commas?",a:"6Napse adapts to 8 market regimes and selects strategies automatically. 3Commas gives you fixed tools to configure manually. 6Napse thinks for you — no manual intervention needed."},
-        {q:"Is the Shariah mode truly compliant?",a:"Shariah mode filters assets at the universe level before any signal is generated. Screened categories include alcohol, tobacco, weapons, conventional banking, pork and gambling. SPOT-only trading eliminates riba entirely."},
-        {q:"When can I switch to live trading?",a:"A built-in checklist validates your readiness: 100+ simulation trades, win rate above 60%, max drawdown below 10%, and your Binance API connected and verified."},
-        {q:"What exchanges are supported?",a:"Binance SPOT is the primary exchange on Pro. Coinbase and Kraken are planned for Elite. DEX Lab covers Base and Solana on-chain, with Phase 2 bringing wallet intelligence."},
-        {q:"Is my Binance API key safe?",a:"Your API key is stored encrypted. We only request Spot Trading and Read permissions — withdrawal access is never requested. Your funds can only be traded, never moved."},
-      ],
-      final_h:"Join 6Napse today.",
-      final_em:"6Napse",
-      final_sub:"Free forever in simulation · Shariah compliant · Go live when you are ready",
-      final_cta:"Create my free account",
-      final_cta2:"Read the docs",
-      footer_links:["Features","Shariah","Pricing","Performance","DEX Lab","Privacy","Terms"],
-    },
-    fr: {
-      nav:["Fonctionnalités","Shariah","Performance","Tarifs","DEX Lab"],
-      badge:"Trading algorithmique · Conforme Shariah · Disponible maintenant",
-      h1a:"L algorithme qui",
-      h1b:"trade à ta place",
-      sub:"6Napse combine 6 couches d intelligence artificielle pour détecter, scorer et exécuter des trades avec la précision d un hedge fund — 24h/24, entièrement automatisé. Conçu pour tous les traders, avec conformité Shariah native.",
-      trust:["Simulation gratuite à vie","Mode conforme Shariah","Sans carte bancaire"],
-      cta1:"Commencer gratuitement",cta2:"Voir comment ca marche",
-      t1:"régime →",t2:"univers →",t3:"signal",t4:"confirmation ×",t5:"sizing →",t6:"ouvert",t7:"plus tard →",t8:"prochain signal",
-      tv1:"RANGING",tv2:"accumulation",tv3:"BUY SOLUSDT",tv4:"1.20",tv5:"$2,266 USDT",tv6:"SL · TP · trailing:2.0 ATR",tv7:"TP atteint · profit réalisé",tv8:"analyse en cours",
-      tk1:"ADX:18 | Squeeze:true",tk2:"Filtre Shariah: ON",tk3:"score:63.8/100",tk4:"CMF:0.12 | MTF:haussier",tk5:"risque:1% ATR:2.1%",
-      sp:[
-        {v:"Automatisé",l:"Moteur 24h/24",s:"Aucune intervention manuelle"},
-        {v:"8 régimes",l:"Intelligence marché",s:"Adaptatif à toute condition"},
-        {v:"18 stratégies",l:"Génération de signal",s:"Multi-timeframe · 5m à 4h"},
-        {v:"Shariah",l:"Mode conforme",s:"Screening éthique natif"},
-      ],
-      how_eyebrow:"Comment ca marche",how_h:"6 neurones.\n1 décision.",how_sub:"Chaque trade passe par 6 couches d intelligence avant l exécution. Sans raccourci, sans approximation — logique systématique pure, 24h/24.",
-      neurons:[
-        {n:"01",title:"Régime de marché",desc:"8 états détectés en temps réel : trending, ranging, pre-breakout, breakout, volatile, bear, panic, squeeze."},
-        {n:"02",title:"Univers d assets",desc:"6 pools data-driven sélectionnés par régime. Filtre Shariah appliqué nativement avant toute génération de signal."},
-        {n:"03",title:"Génération de signal",desc:"18 stratégies filtrées par régime. Multi-timeframe : détection 5m, validation 15m, décision 1h, veto macro 4h."},
-        {n:"04",title:"Score d opportunité",desc:"Conviction 7 dimensions : force signal, confiance régime, sentiment, volume, ATR, biais MTF, squeeze."},
-        {n:"05",title:"Calibration du risque",desc:"Fixed fractional 1% par trade avec multiplicateurs adaptatifs au drawdown et limites de corrélation factorielle."},
-        {n:"06",title:"Exécution intelligente",desc:"SL/TP automatiques, trailing stop ATR, monitoring temps réel. Trois moteurs actifs simultanément."},
-      ],
-      prod_eyebrow:"Produits",prod_h:"Trois moteurs de trading.",prod_sub:"Chaque moteur optimisé pour un horizon de temps et un profil de risque différent — actifs simultanément avec capital isolé.",
-      products:[
-        {tag:"Actif · Binance SPOT",title:"CEX Swing",desc:"Trading swing automatisé par mean reversion, market structure et momentum. SL/TP automatiques et trailing stop. Filtre Shariah disponible.",stats:[{v:"18",l:"stratégies"},{v:"8",l:"régimes"},{v:"1%",l:"risque/trade"}]},
-        {tag:"Actif · Capital isolé",title:"Scalp Book",desc:"Scalping haute fréquence sur 5m et 15m avec portfolio dédié et capital isolé. Entry timing engine pour prix optimal. Positions de 5 à 30 minutes avec timeout automatique.",stats:[{v:"5m",l:"timeframe"},{v:"5",l:"max positions"},{v:"30m",l:"timeout"}]},
-        {tag:"Phase 1 · Base + Solana",title:"DEX Lab",desc:"Détection de pépites on-chain sur Base et Solana. Scoring flow-driven : signal absorption, buyer quality index, screening sécurité GoPlus, analyse age et vélocité.",stats:[{v:"2",l:"chains"},{v:"30m",l:"scan"},{v:"H+3",l:"décision"}]},
-      ],
-      shariah_eyebrow:"Conformité éthique",
-      shariah_h:"Un trading qui\nrespecte tes valeurs",
-      shariah_sub:"6Napse est la première plateforme de trading algorithmique avec conformité Shariah native. Aucun contournement, aucun filtre manuel — le moteur analyse chaque asset automatiquement avant toute ouverture de position.",
-      shariah_feats:[
-        {title:"Screening automatique des assets",desc:"Alcool, tabac, armement, banques conventionnelles, porc et jeux sont filtrés au niveau des univers — avant toute génération de signal."},
-        {title:"Sans riba (intérêt)",desc:"Trading SPOT uniquement, sans marge, sans levier et sans intérêts overnight — pleinement aligné avec les principes de la finance islamique."},
-        {title:"Conformité continue",desc:"Le filtre Shariah est ré-appliqué à chaque cycle du moteur. Si un asset devient non-conforme, il est retiré de l univers automatiquement."},
-        {title:"Un toggle, conformité totale",desc:"Active le mode Shariah dans ton profil. L ensemble du moteur s adapte instantanément — sans configuration, sans compromis."},
-      ],
-      shariah_cta:"Activer le mode Shariah",
-      shariah_market_title:"MARCHÉ FINANCE ISLAMIQUE · 2026",
-      shariah_markets:[
-        {color:"#10b981",name:"Moyen-Orient & GCC",region:"Arabie Saoudite · EAU · Qatar · Koweït",val:"1,9T$"},
-        {color:"#3b82f6",name:"Asie du Sud-Est",region:"Malaisie · Indonésie · Brunei",val:"0,8T$"},
-        {color:"#a78bfa",name:"Europe · diaspora",region:"Royaume-Uni · France · Allemagne · Belgique",val:"0,5T$"},
-        {color:"#f59e0b",name:"Afrique du Nord",region:"Maroc · Egypte · Tunisie · Algérie",val:"0,4T$"},
-      ],
-      shariah_total_label:"Marché adressable total",
-      shariah_total:"3,6 trillions $",
-      perf_eyebrow:"Performance",
-      perf_h:"Vrais résultats.\nTransparence totale.",
-      perf_sub:"Nous croyons en la transparence radicale. Un dashboard de performance public arrive — suivant les vrais résultats des traders sur toutes les stratégies et régimes.",
-      perf_feats:[
-        {title:"Suivi P&L en temps réel",desc:"Valeur du portfolio, gains réalisés et latents sur toutes les stratégies et régimes actifs."},
-        {title:"Analytiques par stratégie",desc:"Win rate, espérance mathématique et drawdown max par stratégie, régime et période."},
-        {title:"Benchmarking inter-traders",desc:"Compare tes performances avec les données agrégées anonymisées de toute la communauté 6Napse."},
-      ],
-      waitlist_h:"Rejoins la liste d attente",
-      waitlist_p:"Sois parmi les premiers à accéder au dashboard de performance public. Un seul email au lancement, aucun spam.",
-      waitlist_ph:"ton@email.com",
-      waitlist_cta:"Me notifier",
-      waitlist_sent:"Tu es sur la liste",
-      price_eyebrow:"Tarifs",
-      price_h:"Commence gratuitement.\nPasse en live\nquand tu es prêt.",
-      price_sub:"Sans carte bancaire pour la simulation. Passe en live uniquement quand ta checklist de validation est complète.",
-      plans:[
-        {tier:"FREE",price:"€0",per:"/mois",line:"Mode simulation. Sans risque, sans carte bancaire. Accès complet à toutes les fonctionnalités et stratégies.",feats:["Capital virtuel 50 000 USDT","18 stratégies complètes","Dashboard + journal + analytiques","DEX Lab Phase 1 — Base + Solana","Alertes Telegram + Email","Mode conforme Shariah"],cta:"Commencer gratuitement",featured:false},
-        {tier:"PRO",price:"€49",per:"/mois",line:"Trading live avec ton vrai capital Binance. Débloqué quand ta checklist est validée.",feats:["Tout le Free inclus","Mode live — Binance SPOT","Capital jusqu à 50 000€","Scalp book activé","Support prioritaire — réponse 24h","1 an d historique performance"],cta:"Commencer Pro",featured:true},
-        {tier:"ELITE",price:"€149",per:"/mois",line:"Pour les traders sérieux, family offices et gérants de fonds qui ont besoin d échelle et de contrôle.",feats:["Tout le Pro inclus","Jusqu à 5 comptes indépendants","Capital illimité","Multi-CEX : Binance + Coinbase + Kraken","DEX Lab Phase 2 — wallet intelligence","Accès API + webhooks"],cta:"Nous contacter",featured:false},
-      ],
-      faq_eyebrow:"FAQ",faq_h:"Questions fréquentes.",faq_sub:"Tout ce que tu dois savoir avant de commencer. Des questions ? On répond dans les 24 heures.",
-      faqs:[
-        {q:"Puis-je perdre de l argent en simulation ?",a:"Non. La simulation utilise uniquement du capital virtuel. Tu peux tester toutes les stratégies sans aucun risque financier. Le toggle live ne se déverrouille que quand ta checklist est entièrement validée."},
-        {q:"Quelle différence avec 3Commas ?",a:"6Napse s adapte à 8 régimes de marché et sélectionne les stratégies automatiquement. 3Commas te donne des outils fixes à configurer manuellement. 6Napse pense à ta place — aucune intervention nécessaire."},
-        {q:"Le mode Shariah est-il vraiment conforme ?",a:"Le mode Shariah filtre les assets au niveau des univers avant toute génération de signal. Catégories exclues : alcool, tabac, armement, banques conventionnelles, porc et jeux. Trading SPOT uniquement — le riba est exclu par construction."},
-        {q:"Quand puis-je passer en live ?",a:"Une checklist intégrée valide ta préparation : 100+ trades en simulation, win rate > 60%, drawdown max < 10%, et API Binance connectée et vérifiée. Le toggle se déverrouille automatiquement."},
-        {q:"Quels exchanges sont supportés ?",a:"Binance SPOT est le principal sur Pro. Coinbase et Kraken sont prévus pour Elite. DEX Lab couvre Base et Solana on-chain, avec la Phase 2 apportant wallet intelligence et plus de chains."},
-        {q:"Ma clé API Binance est-elle sécurisée ?",a:"Ta clé est stockée chiffrée. Nous ne demandons que les permissions Spot Trading et Lecture — l accès aux retraits n est jamais demandé. Tes fonds peuvent uniquement être tradés, jamais déplacés."},
-      ],
-      final_h:"Rejoins 6Napse aujourd hui.",
-      final_em:"6Napse",
-      final_sub:"Gratuit à vie en simulation · Conforme Shariah · Passe en live quand tu es prêt",
-      final_cta:"Créer mon compte gratuit",
-      final_cta2:"Lire la documentation",
-      footer_links:["Fonctionnalités","Shariah","Tarifs","Performance","DEX Lab","Confidentialité","CGU"],
-    }
-  }[lang];
+  const en = {
+    nav: ["Features","Shariah","Performance","Pricing","DEX Lab"],
+    badge: "Algorithmic trading · Shariah compliant · Available now",
+    h1a: "The algorithm that",
+    h1b: "trades for you",
+    sub: "6Napse combines 6 layers of artificial intelligence to detect, score and execute trades with hedge fund precision — 24 hours a day, fully automated.",
+    trust: ["Free simulation forever","Shariah compliant mode","No credit card needed"],
+    cta1: "Start for free", cta2: "See how it works",
+    sp: [{v:"Automated",l:"24/7 trading engine"},{v:"8 regimes",l:"Market intelligence"},{v:"18 strategies",l:"Signal generation"},{v:"Shariah",l:"Compliant mode"}],
+    neurons_eyebrow: "How it works",
+    neurons_title: "6 neurons. 1 decision.",
+    neurons_sub: "Every trade passes through 6 intelligence layers before execution. No shortcuts, no guessing.",
+    neurons: [
+      {n:"01",t:"Market regime",d:"8 states detected in real time: trending, ranging, pre-breakout, breakout, volatile, bear, panic."},
+      {n:"02",t:"Asset universe",d:"6 data-driven pools selected per regime. Shariah filter applied natively before signal generation."},
+      {n:"03",t:"Signal generation",d:"18 strategies filtered by regime. Multi-timeframe: 5m detection, 15m validation, 1h decision, 4h veto."},
+      {n:"04",t:"Opportunity score",d:"7-dimensional conviction: signal, regime confidence, sentiment, volume, ATR, MTF bias, squeeze."},
+      {n:"05",t:"Risk calibration",d:"Fixed fractional 1% per trade with drawdown adaptive multipliers and correlation limits."},
+      {n:"06",t:"Smart execution",d:"Automatic SL/TP, ATR trailing stop, real-time monitoring. Three engines running simultaneously."},
+    ],
+    prod_eyebrow: "Products",
+    prod_title: "Three trading engines.",
+    prod_sub: "Each engine optimized for a different time horizon and risk profile — running simultaneously with isolated capital.",
+    products: [
+      {tag:"Active · Binance SPOT",t:"CEX Swing",d:"Automated swing trading using mean reversion, market structure and momentum strategies. Automatic SL/TP and trailing stop with real-time monitoring.",s:[{v:"18",l:"strategies"},{v:"8",l:"regimes"},{v:"1%",l:"risk/trade"}]},
+      {tag:"Active · Isolated capital",t:"Scalp Book",d:"High-frequency scalping on 5m and 15m timeframes with dedicated isolated portfolio. Entry timing engine for optimal price. 5 to 30 minute positions.",s:[{v:"5m",l:"timeframe"},{v:"5",l:"max pos."},{v:"30m",l:"timeout"}]},
+      {tag:"Phase 1 · Base + Solana",t:"DEX Lab",d:"On-chain gem detection on Base and Solana. Flow-driven scoring: absorption signal, buyer quality index, GoPlus security screening, age and velocity analysis.",s:[{v:"2",l:"chains"},{v:"30m",l:"scan"},{v:"H+3",l:"decision"}]},
+    ],
+    sh_eyebrow: "Ethical compliance",
+    sh_title: "Trading that respects your values",
+    sh_sub: "6Napse is the first algorithmic trading platform with native Shariah compliance. The engine screens every asset automatically before any position is opened.",
+    sh_feats: [
+      {t:"Automatic asset screening",d:"Alcohol, tobacco, weapons, conventional banking, pork and gambling filtered at universe level — before any signal is generated."},
+      {t:"No riba (interest)",d:"SPOT-only trading with no margin, no leverage and no overnight interest — fully aligned with Islamic finance principles."},
+      {t:"Continuous compliance",d:"The Shariah filter re-applies at every engine cycle. Non-compliant assets are removed from the universe automatically."},
+      {t:"One toggle, full compliance",d:"Activate Shariah mode in your profile. The entire engine adapts instantly — no configuration, no compromise."},
+    ],
+    sh_cta: "Enable Shariah mode",
+    sh_markets: [
+      {color:"#10b981",n:"Middle East & GCC",r:"Saudi Arabia · UAE · Qatar · Kuwait",v:"$1.9T"},
+      {color:"#3b82f6",n:"Southeast Asia",r:"Malaysia · Indonesia · Brunei",v:"$0.8T"},
+      {color:"#a78bfa",n:"Europe · diaspora",r:"UK · France · Germany · Belgium",v:"$0.5T"},
+      {color:"#f59e0b",n:"North Africa",r:"Morocco · Egypt · Tunisia · Algeria",v:"$0.4T"},
+    ],
+    sh_total: "$3.6 trillion",
+    sh_total_label: "Total addressable market",
+    perf_eyebrow: "Performance",
+    perf_title: "Real results. Full transparency.",
+    perf_sub: "We believe in radical transparency. A public performance dashboard is coming — tracking real trader results across all strategies and market conditions.",
+    perf_feats: [
+      {t:"Live P&L tracking",d:"Real-time portfolio value, realized and unrealized gains across all active strategies."},
+      {t:"Strategy-level analytics",d:"Win rate, expectancy and drawdown broken down by strategy, regime and time period."},
+      {t:"Cross-trader benchmarking",d:"Compare your performance against anonymized aggregate data from the 6Napse community."},
+    ],
+    wl_title: "Join the waitlist",
+    wl_sub: "Be among the first to access the public performance dashboard. One email when it launches.",
+    wl_ph: "your@email.com",
+    wl_cta: "Notify me",
+    wl_sent: "You are on the list ✓",
+    price_eyebrow: "Pricing",
+    price_title: "Start free. Go live when ready.",
+    price_sub: "No credit card required. Upgrade to live trading only when your readiness checklist is fully validated.",
+    plans: [
+      {tier:"FREE",price:"€0",per:"/month",line:"Simulation mode. No risk, no credit card. Full access to every feature.",feats:["Virtual capital $50,000 USDT","All 18 trading strategies","Full dashboard + journal","DEX Lab Phase 1 — Base + Solana","Telegram + Email alerts","Shariah compliant mode"],cta:"Get started — free",f:false},
+      {tier:"PRO",price:"€49",per:"/month",line:"Live trading with your real Binance capital. Unlocks when your checklist is complete.",feats:["Everything in Free","Live mode — Binance SPOT","Capital up to €50,000","Scalp book fully activated","Priority support — 24h","1 year performance history"],cta:"Start Pro",f:true},
+      {tier:"ELITE",price:"€149",per:"/month",line:"For serious traders, family offices and fund managers who need scale and control.",feats:["Everything in Pro","Up to 5 independent accounts","Unlimited capital","Multi-CEX support","DEX Lab Phase 2","API access + webhooks"],cta:"Contact us",f:false},
+    ],
+    faq_eyebrow: "FAQ",
+    faq_title: "Common questions.",
+    faq_sub: "Everything you need to know. Still have questions? We answer within 24 hours.",
+    faqs: [
+      {q:"Can I lose money in simulation?",a:"No. Simulation uses virtual capital only. The live toggle only unlocks when your checklist is fully validated."},
+      {q:"How is 6Napse different from 3Commas?",a:"6Napse adapts to 8 market regimes automatically. 3Commas gives you fixed tools. 6Napse thinks for you — no manual intervention needed."},
+      {q:"Is the Shariah mode truly compliant?",a:"Shariah mode filters assets before any signal is generated. Screened: alcohol, tobacco, weapons, banking, pork, gambling. SPOT-only eliminates riba."},
+      {q:"When can I switch to live trading?",a:"Built-in checklist: 100+ simulation trades, win rate above 60%, drawdown below 10%, Binance API connected and verified."},
+      {q:"What exchanges are supported?",a:"Binance SPOT on Pro. Coinbase and Kraken planned for Elite. DEX Lab covers Base and Solana on-chain."},
+      {q:"Is my Binance API key safe?",a:"Stored encrypted. Spot Trading + Read permissions only — withdrawal access never requested. Funds can only be traded, never moved."},
+    ],
+    final_sub: "Free forever in simulation · Shariah compliant · Go live when you are ready",
+    final_cta: "Create my free account",
+    final_cta2: "Read the docs",
+  };
 
-  const G = "#16a34a";
-  const W = "#fff";
-  const BG = "#f8fafc";
-  const TEXT = "#0f172a";
-  const MUTED = "#64748b";
-  const MUTED2 = "#94a3b8";
-  const BORDER = "#e2e8f0";
-  const BORDER2 = "#cbd5e1";
-  const GREEN_L = "#f0fdf4";
-  const GREEN_B = "#bbf7d0";
-  const MONO = "JetBrains Mono, monospace";
-  const SANS = "Inter, sans-serif";
-  const MAX = 1200;
-  const PAD = "0 80px";
+  const fr: typeof en = {
+    nav: ["Fonctionnalités","Shariah","Performance","Tarifs","DEX Lab"],
+    badge: "Trading algorithmique · Conforme Shariah · Disponible maintenant",
+    h1a: "L algorithme qui",
+    h1b: "trade à ta place",
+    sub: "6Napse combine 6 couches d intelligence artificielle pour détecter, scorer et exécuter des trades avec la précision d un hedge fund — 24h/24, entièrement automatisé.",
+    trust: ["Simulation gratuite à vie","Mode conforme Shariah","Sans carte bancaire"],
+    cta1: "Commencer gratuitement", cta2: "Voir comment ca marche",
+    sp: [{v:"Automatisé",l:"Moteur 24h/24"},{v:"8 régimes",l:"Intelligence marché"},{v:"18 stratégies",l:"Génération de signal"},{v:"Shariah",l:"Mode conforme"}],
+    neurons_eyebrow: "Comment ca marche",
+    neurons_title: "6 neurones. 1 décision.",
+    neurons_sub: "Chaque trade passe par 6 couches d intelligence avant l exécution. Sans raccourci, sans approximation.",
+    neurons: [
+      {n:"01",t:"Régime de marché",d:"8 états détectés en temps réel : trending, ranging, pre-breakout, breakout, volatile, bear, panic."},
+      {n:"02",t:"Univers d assets",d:"6 pools data-driven sélectionnés par régime. Filtre Shariah appliqué nativement avant toute génération de signal."},
+      {n:"03",t:"Génération de signal",d:"18 stratégies filtrées par régime. Multi-timeframe : détection 5m, validation 15m, décision 1h, veto 4h."},
+      {n:"04",t:"Score d opportunité",d:"Conviction 7 dimensions : force signal, confiance régime, sentiment, volume, ATR, biais MTF, squeeze."},
+      {n:"05",t:"Calibration du risque",d:"Fixed fractional 1% par trade avec multiplicateurs adaptatifs au drawdown et limites de corrélation."},
+      {n:"06",t:"Exécution intelligente",d:"SL/TP automatiques, trailing stop ATR, monitoring temps réel. Trois moteurs actifs simultanément."},
+    ],
+    prod_eyebrow: "Produits",
+    prod_title: "Trois moteurs de trading.",
+    prod_sub: "Chaque moteur optimisé pour un horizon de temps et un profil de risque différent — actifs simultanément avec capital isolé.",
+    products: [
+      {tag:"Actif · Binance SPOT",t:"CEX Swing",d:"Trading swing automatisé par mean reversion, market structure et momentum. SL/TP automatiques et trailing stop avec monitoring temps réel.",s:[{v:"18",l:"stratégies"},{v:"8",l:"régimes"},{v:"1%",l:"risque/trade"}]},
+      {tag:"Actif · Capital isolé",t:"Scalp Book",d:"Scalping haute fréquence sur 5m et 15m avec portfolio dédié et capital isolé. Entry timing engine pour prix optimal. Positions de 5 à 30 minutes.",s:[{v:"5m",l:"timeframe"},{v:"5",l:"max pos."},{v:"30m",l:"timeout"}]},
+      {tag:"Phase 1 · Base + Solana",t:"DEX Lab",d:"Détection de pépites on-chain sur Base et Solana. Scoring flow-driven : signal absorption, BQI, screening GoPlus, analyse age et vélocité.",s:[{v:"2",l:"chains"},{v:"30m",l:"scan"},{v:"H+3",l:"décision"}]},
+    ],
+    sh_eyebrow: "Conformité éthique",
+    sh_title: "Un trading qui respecte tes valeurs",
+    sh_sub: "6Napse est la première plateforme de trading algorithmique avec conformité Shariah native. Le moteur analyse chaque asset automatiquement avant toute ouverture de position.",
+    sh_feats: [
+      {t:"Screening automatique des assets",d:"Alcool, tabac, armement, banques conventionnelles, porc et jeux filtrés au niveau des univers — avant toute génération de signal."},
+      {t:"Sans riba (intérêt)",d:"Trading SPOT uniquement, sans marge, sans levier et sans intérêts overnight — pleinement aligné avec la finance islamique."},
+      {t:"Conformité continue",d:"Le filtre Shariah est ré-appliqué à chaque cycle du moteur. Les assets non-conformes sont retirés automatiquement."},
+      {t:"Un toggle, conformité totale",d:"Active le mode Shariah dans ton profil. L ensemble du moteur s adapte instantanément — sans configuration."},
+    ],
+    sh_cta: "Activer le mode Shariah",
+    sh_markets: [
+      {color:"#10b981",n:"Moyen-Orient & GCC",r:"Arabie Saoudite · EAU · Qatar · Koweït",v:"1,9T$"},
+      {color:"#3b82f6",n:"Asie du Sud-Est",r:"Malaisie · Indonésie · Brunei",v:"0,8T$"},
+      {color:"#a78bfa",n:"Europe · diaspora",r:"Royaume-Uni · France · Allemagne · Belgique",v:"0,5T$"},
+      {color:"#f59e0b",n:"Afrique du Nord",r:"Maroc · Egypte · Tunisie · Algérie",v:"0,4T$"},
+    ],
+    sh_total: "3,6 trillions $",
+    sh_total_label: "Marché adressable total",
+    perf_eyebrow: "Performance",
+    perf_title: "Vrais résultats. Transparence totale.",
+    perf_sub: "Nous croyons en la transparence radicale. Un dashboard de performance public arrive — suivant les vrais résultats des traders sur toutes les stratégies.",
+    perf_feats: [
+      {t:"Suivi P&L en temps réel",d:"Valeur du portfolio, gains réalisés et latents sur toutes les stratégies et régimes actifs."},
+      {t:"Analytiques par stratégie",d:"Win rate, espérance et drawdown max par stratégie, régime et période de temps."},
+      {t:"Benchmarking inter-traders",d:"Compare tes performances avec les données agrégées anonymisées de la communauté 6Napse."},
+    ],
+    wl_title: "Rejoins la liste d attente",
+    wl_sub: "Sois parmi les premiers à accéder au dashboard de performance public. Un seul email au lancement.",
+    wl_ph: "ton@email.com",
+    wl_cta: "Me notifier",
+    wl_sent: "Tu es sur la liste ✓",
+    price_eyebrow: "Tarifs",
+    price_title: "Commence gratuitement. Passe en live quand tu es prêt.",
+    price_sub: "Sans carte bancaire pour la simulation. Passe en live uniquement quand ta checklist est validée.",
+    plans: [
+      {tier:"FREE",price:"€0",per:"/mois",line:"Mode simulation. Sans risque, sans carte bancaire. Accès complet à toutes les fonctionnalités.",feats:["Capital virtuel 50 000 USDT","18 stratégies complètes","Dashboard + journal + analytiques","DEX Lab Phase 1 — Base + Solana","Alertes Telegram + Email","Mode conforme Shariah"],cta:"Commencer gratuitement",f:false},
+      {tier:"PRO",price:"€49",per:"/mois",line:"Trading live avec ton vrai capital Binance. Débloqué quand ta checklist est validée.",feats:["Tout le Free inclus","Mode live — Binance SPOT","Capital jusqu à 50 000€","Scalp book activé","Support prioritaire — 24h","1 an d historique performance"],cta:"Commencer Pro",f:true},
+      {tier:"ELITE",price:"€149",per:"/mois",line:"Pour les traders sérieux, family offices et gérants de fonds qui ont besoin d échelle.",feats:["Tout le Pro inclus","Jusqu à 5 comptes indépendants","Capital illimité","Multi-CEX support","DEX Lab Phase 2","Accès API + webhooks"],cta:"Nous contacter",f:false},
+    ],
+    faq_eyebrow: "FAQ",
+    faq_title: "Questions fréquentes.",
+    faq_sub: "Tout ce qu il faut savoir avant de commencer. Des questions ? On répond en 24 heures.",
+    faqs: [
+      {q:"Puis-je perdre de l argent en simulation ?",a:"Non. La simulation utilise uniquement du capital virtuel. Le toggle live ne se déverrouille que quand ta checklist est entièrement validée."},
+      {q:"Quelle différence avec 3Commas ?",a:"6Napse s adapte à 8 régimes de marché automatiquement. 3Commas te donne des outils fixes. 6Napse pense à ta place — aucune intervention nécessaire."},
+      {q:"Le mode Shariah est-il vraiment conforme ?",a:"Le mode Shariah filtre les assets avant toute génération de signal. Exclus : alcool, tabac, armement, banques, porc, jeux. Trading SPOT uniquement — le riba est exclu."},
+      {q:"Quand puis-je passer en live ?",a:"Checklist intégrée : 100+ trades en simulation, win rate > 60%, drawdown < 10%, API Binance connectée et vérifiée."},
+      {q:"Quels exchanges sont supportés ?",a:"Binance SPOT sur Pro. Coinbase et Kraken prévus pour Elite. DEX Lab couvre Base et Solana on-chain."},
+      {q:"Ma clé API Binance est-elle sécurisée ?",a:"Stockée chiffrée. Permissions Spot Trading + Lecture uniquement — l accès aux retraits n est jamais demandé."},
+    ],
+    final_sub: "Gratuit à vie en simulation · Conforme Shariah · Passe en live quand tu es prêt",
+    final_cta: "Créer mon compte gratuit",
+    final_cta2: "Lire la documentation",
+  };
 
-  const sec: React.CSSProperties = { borderBottom:`1px solid ${BORDER}`, padding:"96px 0" };
-  const secAlt: React.CSSProperties = { ...sec, background:BG };
-  const inner: React.CSSProperties = { maxWidth:MAX, margin:"0 auto", padding:PAD };
-  const eyebrow: React.CSSProperties = { fontSize:11, fontFamily:MONO, color:G, letterSpacing:2, textTransform:"uppercase" as const, marginBottom:12 };
-  const secH: React.CSSProperties = { fontSize:44, fontWeight:800, letterSpacing:-1.5, lineHeight:1.08, color:TEXT };
-  const secSub: React.CSSProperties = { fontSize:16, color:MUTED, lineHeight:1.65 };
-  const twoCol: React.CSSProperties = { display:"grid", gridTemplateColumns:"1fr 1fr", gap:80, alignItems:"end", marginBottom:56 };
+  const t = lang === "en" ? en : fr;
 
-  const Dot = ({size=6,color=G}:{size?:number,color?:string}) => (
-    <div style={{width:size,height:size,background:color,borderRadius:"50%",flexShrink:0}} />
-  );
-
-  const Check = ({featured=false}:{featured?:boolean}) => (
-    <div style={{width:16,height:16,borderRadius:"50%",background:featured?"rgba(22,163,74,.15)":GREEN_L,border:`1px solid ${featured?"rgba(22,163,74,.3)":GREEN_B}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2}}>
-      <Dot size={5} />
+  const SectionHeader = ({eyebrow, title, sub}: {eyebrow:string, title:string, sub:string}) => (
+    <div className="grid grid-cols-2 gap-20 items-end mb-14">
+      <div>
+        <p className="text-xs font-mono text-green-600 tracking-widest uppercase mb-3">{eyebrow}</p>
+        <h2 className="text-4xl font-extrabold tracking-tight leading-tight text-gray-900">{title}</h2>
+      </div>
+      <p className="text-base text-gray-500 leading-relaxed pb-1">{sub}</p>
     </div>
   );
 
-  async function handleWaitlist(e: React.FormEvent) {
-    e.preventDefault();
-    setSent(true);
-  }
+  const Check = ({dark=false}:{dark?:boolean}) => (
+    <div className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${dark ? "bg-green-900 border border-green-700" : "bg-green-50 border border-green-200"}`}>
+      <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+    </div>
+  );
 
   return (
-    <div style={{background:W,color:TEXT,fontFamily:SANS,fontSize:16,lineHeight:1.6}}>
+    <div className="bg-white text-gray-900 font-sans">
 
       {/* NAV */}
-      <nav style={{background:"rgba(255,255,255,.95)",borderBottom:`1px solid ${BORDER}`,height:64,display:"flex",alignItems:"center",position:"sticky",top:0,zIndex:100}}>
-        <div style={{...inner,display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:PAD}}>
-          <div style={{fontFamily:MONO,fontSize:20,fontWeight:700,letterSpacing:-.5,color:TEXT}}>
-            <span style={{color:G}}>6</span>Napse
+      <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-8 h-16 flex items-center justify-between">
+          <div className="font-mono text-xl font-bold tracking-tight">
+            <span className="text-green-600">6</span>Napse
           </div>
-          <div style={{display:"flex",gap:32}}>
-            {t.nav.map(n=><a key={n} style={{fontSize:14,color:MUTED,textDecoration:"none",cursor:"pointer"}}>{n}</a>)}
+          <div className="flex items-center gap-8">
+            {t.nav.map(n => (
+              <a key={n} className="text-sm text-gray-500 hover:text-gray-900 cursor-pointer transition-colors">{n}</a>
+            ))}
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:14}}>
-            <div style={{display:"flex",border:`1px solid ${BORDER}`,borderRadius:8,overflow:"hidden"}}>
-              {(["en","fr"] as const).map(l=>(
-                <span key={l} onClick={()=>setLang(l)} style={{padding:"5px 12px",fontSize:12,fontFamily:MONO,cursor:"pointer",background:lang===l?TEXT:"transparent",color:lang===l?W:MUTED}}>
+          <div className="flex items-center gap-3">
+            <div className="flex border border-gray-200 rounded-lg overflow-hidden">
+              {(["en","fr"] as const).map(l => (
+                <button key={l} onClick={() => setLang(l)}
+                  className={`px-3 py-1.5 text-xs font-mono transition-colors ${lang===l ? "bg-gray-900 text-white" : "text-gray-400 hover:text-gray-600"}`}>
                   {l.toUpperCase()}
-                </span>
+                </button>
               ))}
             </div>
-            <button onClick={()=>router.push("/signup")} style={{background:TEXT,color:W,padding:"9px 20px",borderRadius:9,fontSize:13,fontWeight:600,border:"none",cursor:"pointer"}}>
+            <button onClick={() => router.push("/signup")}
+              className="bg-gray-900 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors">
               {t.cta1}
             </button>
           </div>
@@ -253,56 +224,62 @@ export default function Landing() {
       </nav>
 
       {/* HERO */}
-      <section style={{background:W,borderBottom:`1px solid ${BORDER}`,padding:"100px 0 80px"}}>
-        <div style={{...inner,padding:PAD}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center"}}>
+      <section className="bg-white border-b border-gray-200 py-24">
+        <div className="max-w-6xl mx-auto px-8">
+          <div className="grid grid-cols-2 gap-20 items-center">
             <div>
-              <div style={{display:"inline-flex",alignItems:"center",gap:7,background:GREEN_L,border:`1px solid ${GREEN_B}`,borderRadius:100,padding:"5px 14px",marginBottom:28,fontSize:12,color:G,fontFamily:MONO}}>
-                <div style={{width:6,height:6,background:G,borderRadius:"50%"}} />
-                {t.badge}
+              <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-1.5 mb-8">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                <span className="text-xs font-mono text-green-700">{t.badge}</span>
               </div>
-              <h1 style={{fontSize:56,fontWeight:800,lineHeight:1.05,letterSpacing:-2,marginBottom:24,color:TEXT}}>
-                {t.h1a}<br/><em style={{fontStyle:"normal",color:G}}>{t.h1b}</em>
+              <h1 className="text-5xl font-extrabold tracking-tight leading-tight mb-6 text-gray-900">
+                {t.h1a}<br/>
+                <em className="not-italic text-green-600">{t.h1b}</em>
               </h1>
-              <p style={{fontSize:17,color:MUTED,lineHeight:1.7,marginBottom:36}}>{t.sub}</p>
-              <div style={{display:"flex",gap:12,marginBottom:40}}>
-                <button onClick={()=>router.push("/signup")} style={{background:TEXT,color:W,padding:"14px 28px",borderRadius:10,fontSize:15,fontWeight:600,border:"none",cursor:"pointer"}}>{t.cta1}</button>
-                <button style={{background:W,color:TEXT,padding:"14px 28px",borderRadius:10,fontSize:15,border:`1px solid ${BORDER2}`,cursor:"pointer"}}>{t.cta2}</button>
+              <p className="text-lg text-gray-500 leading-relaxed mb-8">{t.sub}</p>
+              <div className="flex gap-3 mb-10">
+                <button onClick={() => router.push("/signup")}
+                  className="bg-gray-900 text-white px-7 py-3.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors">
+                  {t.cta1}
+                </button>
+                <button className="border border-gray-300 text-gray-700 px-7 py-3.5 rounded-xl text-sm hover:border-gray-400 transition-colors">
+                  {t.cta2}
+                </button>
               </div>
-              <div style={{display:"flex",gap:24}}>
-                {t.trust.map(tr=>(
-                  <div key={tr} style={{display:"flex",alignItems:"center",gap:7,fontSize:13,color:MUTED}}>
-                    <div style={{width:16,height:16,background:GREEN_L,border:`1px solid ${GREEN_B}`,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                      <Dot size={5} />
-                    </div>
+              <div className="flex flex-col gap-2">
+                {t.trust.map(tr => (
+                  <div key={tr} className="flex items-center gap-2 text-sm text-gray-500">
+                    <Check />
                     {tr}
                   </div>
                 ))}
               </div>
             </div>
             <div>
-              <div style={{border:`1px solid ${BORDER}`,borderRadius:14,overflow:"hidden",background:W}}>
-                <div style={{background:BG,padding:"12px 16px",display:"flex",alignItems:"center",gap:7,borderBottom:`1px solid ${BORDER}`}}>
-                  {["#ff5f57","#febc2e","#28c840"].map(c=><div key={c} style={{width:11,height:11,borderRadius:"50%",background:c}} />)}
-                  <span style={{fontSize:11,color:MUTED2,fontFamily:MONO,marginLeft:8}}>6napse · signal engine · live</span>
+              <div className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+                <div className="bg-gray-50 px-4 py-3 flex items-center gap-2 border-b border-gray-200">
+                  <div className="w-3 h-3 rounded-full bg-red-400" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                  <div className="w-3 h-3 rounded-full bg-green-400" />
+                  <span className="text-xs text-gray-400 font-mono ml-2">6napse · signal engine · live</span>
                 </div>
-                <div style={{padding:"20px 22px",fontFamily:MONO,fontSize:12,lineHeight:2.2}}>
+                <div className="p-5 font-mono text-xs leading-loose">
                   {[
-                    {p:"$",k:t.t1,v:t.tv1,s:t.tk1,vc:TEXT,sc:MUTED2},
-                    {p:"$",k:t.t2,v:t.tv2,s:t.tk2,vc:TEXT,sc:MUTED2},
-                    {p:"$",k:t.t3,v:t.tv3,s:t.tk3,vc:TEXT,sc:MUTED2},
-                    {p:"$",k:t.t4,v:t.tv4,s:t.tk4,vc:TEXT,sc:MUTED2},
-                    {p:"$",k:t.t5,v:t.tv5,s:t.tk5,vc:TEXT,sc:MUTED2},
-                    {p:"$",k:t.t6,v:t.tv6,s:"",vc:G,sc:G},
-                    {p:"$",k:t.t7,v:t.tv7,s:"",vc:G,sc:G,warn:true},
-                    {p:"$",k:t.t8,v:t.tv8,s:"",vc:TEXT,sc:MUTED2,cursor:true},
-                  ].map((l,i)=>(
-                    <div key={i} style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-                      <span style={{color:G}}>{l.p}</span>
-                      <span style={{color:l.warn?"#b45309":MUTED2}}>{l.k}</span>
-                      <span style={{color:l.vc,fontWeight:600}}>{l.v}</span>
-                      {l.s && <span style={{color:l.sc}}>{l.s}</span>}
-                      {l.cursor && <span style={{display:"inline-block",width:7,height:14,background:TEXT,verticalAlign:"middle"}} />}
+                    {k:"regime →", v:"RANGING", s:"ADX:18 | Squeeze:true", vc:"text-gray-900", sc:"text-gray-400"},
+                    {k:"universe →", v:"accumulation", s:"Shariah filter: ON", vc:"text-gray-900", sc:"text-gray-400"},
+                    {k:"signal", v:"BUY SOLUSDT", s:"score:63.8/100", vc:"font-bold text-gray-900", sc:"text-gray-400"},
+                    {k:"confirm ×", v:"1.20", s:"CMF:0.12 | MTF:bullish", vc:"text-gray-900", sc:"text-gray-400"},
+                    {k:"sizing →", v:"$2,266 USDT", s:"risk:1% ATR:2.1%", vc:"text-gray-900", sc:"text-gray-400"},
+                    {k:"opened →", v:"SL · TP · trailing:2.0 ATR", s:"", vc:"text-green-600", sc:""},
+                    {k:"later →", v:"TP reached · profit booked", s:"", vc:"text-green-600", sc:"", warn:true},
+                    {k:"portfolio →", v:"scanning next signal", s:"", vc:"text-gray-900", sc:"", cursor:true},
+                  ].map((l,i) => (
+                    <div key={i} className="flex items-baseline gap-2 flex-wrap">
+                      <span className="text-green-600">$</span>
+                      <span className={`${l.warn ? "text-amber-600" : "text-gray-400"}`}>{l.k}</span>
+                      <span className={l.vc}>{l.v}</span>
+                      {l.s && <span className={l.sc}>{l.s}</span>}
+                      {l.cursor && <span className="inline-block w-1.5 h-3.5 bg-gray-900 animate-pulse ml-0.5" />}
                     </div>
                   ))}
                 </div>
@@ -313,14 +290,13 @@ export default function Landing() {
       </section>
 
       {/* STATS BAR */}
-      <div style={{background:BG,borderBottom:`1px solid ${BORDER}`,padding:"48px 0"}}>
-        <div style={{...inner,padding:PAD}}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:0,alignItems:"center"}}>
-            {t.sp.map((s,i)=>(
-              <div key={i} style={{textAlign:"center",padding:"0 24px",borderRight:i<3?`1px solid ${BORDER}`:"none"}}>
-                <div style={{fontSize:13,fontWeight:600,color:MUTED,fontFamily:MONO,textTransform:"uppercase",letterSpacing:.5,marginBottom:6}}>{s.v}</div>
-                <div style={{fontSize:22,fontWeight:800,color:TEXT,letterSpacing:-.5}}>{s.l}</div>
-                <div style={{fontSize:12,color:MUTED2,marginTop:4}}>{s.s}</div>
+      <div className="bg-gray-50 border-b border-gray-200 py-12">
+        <div className="max-w-6xl mx-auto px-8">
+          <div className="grid grid-cols-4 divide-x divide-gray-200">
+            {t.sp.map((s,i) => (
+              <div key={i} className="text-center px-8">
+                <div className="text-sm font-mono font-semibold text-gray-500 uppercase tracking-wide mb-1">{s.v}</div>
+                <div className="text-xl font-bold text-gray-900">{s.l}</div>
               </div>
             ))}
           </div>
@@ -328,27 +304,27 @@ export default function Landing() {
       </div>
 
       {/* NEURONS */}
-      <section style={secAlt}>
-        <div style={{...inner,padding:PAD}}>
-          <div style={twoCol}>
-            <div><div style={eyebrow}>{t.how_eyebrow}</div><h2 style={{...secH,marginBottom:0}}>{t.how_h.split("\\n").map((l,i)=><span key={i}>{l}{i===0&&<br/>}</span>)}</h2></div>
-            <p style={secSub}>{t.how_sub}</p>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"5fr 7fr",gap:64,alignItems:"start"}}>
-            <div>
-              {t.neurons.map(n=>(
-                <div key={n.n} style={{display:"flex",alignItems:"flex-start",gap:14,padding:"16px 0",borderBottom:`1px solid ${BORDER}`}}>
-                  <span style={{fontFamily:MONO,fontSize:10,color:G,width:20,flexShrink:0,paddingTop:2}}>{n.n}</span>
-                  <div><div style={{fontSize:14,fontWeight:700,color:TEXT,marginBottom:4}}>{n.title}</div><div style={{fontSize:12,color:MUTED,lineHeight:1.55}}>{n.desc}</div></div>
+      <section className="bg-gray-50 border-b border-gray-200 py-24">
+        <div className="max-w-6xl mx-auto px-8">
+          <SectionHeader eyebrow={t.neurons_eyebrow} title={t.neurons_title} sub={t.neurons_sub} />
+          <div className="grid grid-cols-2 gap-16 items-start">
+            <div className="divide-y divide-gray-100">
+              {t.neurons.map(n => (
+                <div key={n.n} className="flex gap-4 py-4">
+                  <span className="font-mono text-xs text-green-600 w-6 flex-shrink-0 pt-0.5">{n.n}</span>
+                  <div>
+                    <div className="text-sm font-bold text-gray-900 mb-1">{n.t}</div>
+                    <div className="text-xs text-gray-500 leading-relaxed">{n.d}</div>
+                  </div>
                 </div>
               ))}
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-              {t.neurons.map(n=>(
-                <div key={n.n} style={{background:W,border:`1px solid ${BORDER}`,borderRadius:12,padding:22}}>
-                  <div style={{fontFamily:MONO,fontSize:10,color:G,marginBottom:8,letterSpacing:1}}>{n.n}</div>
-                  <div style={{fontSize:14,fontWeight:700,marginBottom:6,color:TEXT}}>{n.title}</div>
-                  <div style={{fontSize:12,color:MUTED,lineHeight:1.55}}>{n.desc}</div>
+            <div className="grid grid-cols-2 gap-3">
+              {t.neurons.map(n => (
+                <div key={n.n} className="bg-white border border-gray-200 rounded-xl p-5">
+                  <div className="font-mono text-xs text-green-600 mb-2 tracking-wide">{n.n}</div>
+                  <div className="text-sm font-bold text-gray-900 mb-2">{n.t}</div>
+                  <div className="text-xs text-gray-500 leading-relaxed">{n.d}</div>
                 </div>
               ))}
             </div>
@@ -357,26 +333,24 @@ export default function Landing() {
       </section>
 
       {/* PRODUCTS */}
-      <section style={sec}>
-        <div style={{...inner,padding:PAD}}>
-          <div style={twoCol}>
-            <div><div style={eyebrow}>{t.prod_eyebrow}</div><h2 style={{...secH,marginBottom:0}}>{t.prod_h}</h2></div>
-            <p style={secSub}>{t.prod_sub}</p>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20}}>
-            {t.products.map(p=>(
-              <div key={p.title} style={{border:`1px solid ${BORDER}`,borderRadius:16,padding:32,background:BG}}>
-                <div style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:10,fontFamily:MONO,color:G,background:GREEN_L,border:`1px solid ${GREEN_B}`,padding:"3px 10px",borderRadius:100,marginBottom:18}}>
-                  <Dot size={5} />{p.tag}
+      <section className="bg-white border-b border-gray-200 py-24">
+        <div className="max-w-6xl mx-auto px-8">
+          <SectionHeader eyebrow={t.prod_eyebrow} title={t.prod_title} sub={t.prod_sub} />
+          <div className="grid grid-cols-3 gap-5">
+            {t.products.map(p => (
+              <div key={p.t} className="border border-gray-200 rounded-2xl p-8 bg-gray-50">
+                <div className="inline-flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-full px-3 py-1 mb-5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  <span className="text-xs font-mono text-green-700">{p.tag}</span>
                 </div>
-                <div style={{fontSize:22,fontWeight:800,letterSpacing:-.5,marginBottom:10,color:TEXT}}>{p.title}</div>
-                <div style={{fontSize:13,color:MUTED,lineHeight:1.65,marginBottom:24}}>{p.desc}</div>
-                <div style={{height:1,background:BORDER,marginBottom:20}} />
-                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
-                  {p.stats.map(s=>(
-                    <div key={s.l} style={{textAlign:"center",background:W,border:`1px solid ${BORDER}`,borderRadius:8,padding:"10px 6px"}}>
-                      <div style={{fontSize:17,fontWeight:700,color:G,fontFamily:MONO}}>{s.v}</div>
-                      <div style={{fontSize:10,color:MUTED2,marginTop:2}}>{s.l}</div>
+                <div className="text-xl font-extrabold tracking-tight text-gray-900 mb-3">{p.t}</div>
+                <div className="text-sm text-gray-500 leading-relaxed mb-6">{p.d}</div>
+                <div className="h-px bg-gray-200 mb-5" />
+                <div className="grid grid-cols-3 gap-2">
+                  {p.s.map(s => (
+                    <div key={s.l} className="text-center bg-white border border-gray-200 rounded-lg py-3 px-2">
+                      <div className="text-base font-bold text-green-600 font-mono">{s.v}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{s.l}</div>
                     </div>
                   ))}
                 </div>
@@ -387,51 +361,52 @@ export default function Landing() {
       </section>
 
       {/* SHARIAH */}
-      <section style={{background:TEXT,borderBottom:"none"}}>
-        <div style={{maxWidth:MAX,margin:"0 auto",padding:`96px 80px`,display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center"}}>
-          <div>
-            <div style={{...eyebrow,color:G}}>{t.shariah_eyebrow}</div>
-            <h2 style={{fontSize:44,fontWeight:800,letterSpacing:-1.5,lineHeight:1.08,marginBottom:20,color:W}}>
-              {t.shariah_h.split("\\n").map((l,i)=><span key={i}>{i===1?<em style={{fontStyle:"normal",color:G}}>{l}</em>:l}{i===0&&<br/>}</span>)}
-            </h2>
-            <p style={{fontSize:16,color:"rgba(255,255,255,.5)",lineHeight:1.7,marginBottom:32}}>{t.shariah_sub}</p>
-            <div style={{display:"flex",flexDirection:"column",gap:16,marginBottom:36}}>
-              {t.shariah_feats.map(f=>(
-                <div key={f.title} style={{display:"flex",alignItems:"flex-start",gap:12}}>
-                  <div style={{width:18,height:18,background:"rgba(22,163,74,.15)",border:"1px solid rgba(22,163,74,.3)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2}}>
-                    <Dot size={6} />
-                  </div>
-                  <div style={{fontSize:14,color:"rgba(255,255,255,.7)",lineHeight:1.5}}>
-                    <strong style={{color:W,fontWeight:600}}>{f.title}</strong> — {f.desc}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button onClick={()=>router.push("/signup")} style={{display:"inline-flex",alignItems:"center",gap:8,background:G,color:W,padding:"13px 24px",borderRadius:10,fontSize:14,fontWeight:600,border:"none",cursor:"pointer"}}>
-              {t.shariah_cta}
-            </button>
-          </div>
-          <div>
-            <div style={{background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.1)",borderRadius:16,padding:32}}>
-              <div style={{fontSize:11,fontFamily:MONO,color:"rgba(255,255,255,.35)",marginBottom:20,letterSpacing:1}}>{t.shariah_market_title}</div>
-              <div style={{display:"flex",flexDirection:"column",gap:12}}>
-                {t.shariah_markets.map(m=>(
-                  <div key={m.name} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 16px",background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",borderRadius:10}}>
-                    <div style={{display:"flex",alignItems:"center",gap:10}}>
-                      <div style={{width:8,height:8,borderRadius:"50%",background:m.color}} />
-                      <div>
-                        <div style={{fontSize:13,color:"rgba(255,255,255,.8)",fontWeight:500}}>{m.name}</div>
-                        <div style={{fontSize:11,color:"rgba(255,255,255,.3)",fontFamily:MONO}}>{m.region}</div>
-                      </div>
+      <section className="bg-gray-900 py-24">
+        <div className="max-w-6xl mx-auto px-8">
+          <div className="grid grid-cols-2 gap-20 items-center">
+            <div>
+              <p className="text-xs font-mono text-green-500 tracking-widest uppercase mb-3">{t.sh_eyebrow}</p>
+              <h2 className="text-4xl font-extrabold tracking-tight leading-tight text-white mb-5">
+                {t.sh_title.split(" ").slice(0,-2).join(" ")}{" "}
+                <em className="not-italic text-green-500">{t.sh_title.split(" ").slice(-2).join(" ")}</em>
+              </h2>
+              <p className="text-base text-gray-400 leading-relaxed mb-8">{t.sh_sub}</p>
+              <div className="flex flex-col gap-4 mb-8">
+                {t.sh_feats.map(f => (
+                  <div key={f.t} className="flex gap-3">
+                    <div className="w-4 h-4 rounded-full bg-green-900 border border-green-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                     </div>
-                    <div style={{fontSize:14,color:G,fontFamily:MONO,fontWeight:700}}>{m.val}</div>
+                    <div className="text-sm text-gray-300 leading-relaxed">
+                      <strong className="text-white font-semibold">{f.t}</strong> — {f.d}
+                    </div>
                   </div>
                 ))}
               </div>
-              <div style={{height:1,background:"rgba(255,255,255,.08)",margin:"16px 0"}} />
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <div style={{fontSize:12,color:"rgba(255,255,255,.35)",fontFamily:MONO}}>{t.shariah_total_label}</div>
-                <div style={{fontSize:16,color:W,fontFamily:MONO,fontWeight:700}}>{t.shariah_total}</div>
+              <button onClick={() => router.push("/signup")}
+                className="bg-green-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-green-700 transition-colors">
+                {t.sh_cta}
+              </button>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+              <div className="text-xs font-mono text-gray-500 mb-5 tracking-wider uppercase">Islamic Finance Market · 2026</div>
+              <div className="flex flex-col gap-3">
+                {t.sh_markets.map(m => (
+                  <div key={m.n} className="flex items-center justify-between bg-white/5 border border-white/8 rounded-xl px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{background:m.color}} />
+                      <div>
+                        <div className="text-sm text-white/80 font-medium">{m.n}</div>
+                        <div className="text-xs text-white/30 font-mono">{m.r}</div>
+                      </div>
+                    </div>
+                    <div className="text-sm text-green-400 font-mono font-bold">{m.v}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-white/10 mt-4 pt-4 flex justify-between items-center">
+                <div className="text-xs text-gray-500 font-mono">{t.sh_total_label}</div>
+                <div className="text-base text-white font-mono font-bold">{t.sh_total}</div>
               </div>
             </div>
           </div>
@@ -439,78 +414,82 @@ export default function Landing() {
       </section>
 
       {/* PERFORMANCE */}
-      <section style={secAlt}>
-        <div style={{...inner,padding:PAD}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:80,alignItems:"center"}}>
+      <section className="bg-gray-50 border-b border-gray-200 py-24">
+        <div className="max-w-6xl mx-auto px-8">
+          <div className="grid grid-cols-2 gap-20 items-center">
             <div>
-              <div style={eyebrow}>{t.perf_eyebrow}</div>
-              <h2 style={{...secH,marginBottom:16}}>{t.perf_h.split("\\n").map((l,i)=><span key={i}>{l}{i===0&&<br/>}</span>)}</h2>
-              <p style={{...secSub,marginBottom:36}}>{t.perf_sub}</p>
-              <div style={{display:"flex",flexDirection:"column",gap:20}}>
-                {t.perf_feats.map(f=>(
-                  <div key={f.title} style={{display:"flex",alignItems:"flex-start",gap:14}}>
-                    <div style={{width:36,height:36,background:GREEN_L,border:`1px solid ${GREEN_B}`,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                      <Dot size={8} />
+              <p className="text-xs font-mono text-green-600 tracking-widest uppercase mb-3">{t.perf_eyebrow}</p>
+              <h2 className="text-4xl font-extrabold tracking-tight leading-tight text-gray-900 mb-5">{t.perf_title}</h2>
+              <p className="text-base text-gray-500 leading-relaxed mb-8">{t.perf_sub}</p>
+              <div className="flex flex-col gap-5">
+                {t.perf_feats.map(f => (
+                  <div key={f.t} className="flex gap-4">
+                    <div className="w-9 h-9 bg-green-50 border border-green-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
                     </div>
                     <div>
-                      <div style={{fontSize:14,fontWeight:700,marginBottom:4,color:TEXT}}>{f.title}</div>
-                      <div style={{fontSize:13,color:MUTED,lineHeight:1.5}}>{f.desc}</div>
+                      <div className="text-sm font-bold text-gray-900 mb-1">{f.t}</div>
+                      <div className="text-xs text-gray-500 leading-relaxed">{f.d}</div>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-            <div>
-              <div style={{background:W,border:`1px solid ${BORDER}`,borderRadius:16,padding:40}}>
-                <h3 style={{fontSize:22,fontWeight:700,marginBottom:8,letterSpacing:-.5,color:TEXT}}>{t.waitlist_h}</h3>
-                <p style={{fontSize:14,color:MUTED,marginBottom:24,lineHeight:1.6}}>{t.waitlist_p}</p>
-                {sent ? (
-                  <div style={{background:GREEN_L,border:`1px solid ${GREEN_B}`,borderRadius:9,padding:"14px 16px",fontSize:14,color:G,fontFamily:MONO,textAlign:"center"}}>
-                    {t.waitlist_sent}
-                  </div>
-                ) : (
-                  <form onSubmit={handleWaitlist} style={{display:"flex",gap:8}}>
-                    <input value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder={t.waitlist_ph} required
-                      style={{flex:1,padding:"12px 16px",border:`1px solid ${BORDER2}`,borderRadius:9,fontSize:14,outline:"none",background:W,fontFamily:SANS}} />
-                    <button type="submit" style={{padding:"12px 20px",background:TEXT,color:W,border:"none",borderRadius:9,fontSize:13,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>
-                      {t.waitlist_cta}
-                    </button>
-                  </form>
-                )}
-              </div>
+            <div className="bg-white border border-gray-200 rounded-2xl p-10">
+              <h3 className="text-xl font-bold tracking-tight text-gray-900 mb-2">{t.wl_title}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed mb-6">{t.wl_sub}</p>
+              {sent ? (
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm font-mono text-green-700 text-center">
+                  {t.wl_sent}
+                </div>
+              ) : (
+                <form onSubmit={e => {e.preventDefault(); setSent(true);}} className="flex gap-2">
+                  <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder={t.wl_ph} required
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-sm outline-none focus:border-gray-500 font-sans" />
+                  <button type="submit"
+                    className="bg-gray-900 text-white px-5 py-3 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors whitespace-nowrap">
+                    {t.wl_cta}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
       </section>
 
       {/* PRICING */}
-      <section style={sec}>
-        <div style={{...inner,padding:PAD}}>
-          <div style={twoCol}>
+      <section className="bg-white border-b border-gray-200 py-24">
+        <div className="max-w-6xl mx-auto px-8">
+          <div className="grid grid-cols-2 gap-20 items-end mb-14">
             <div>
-              <div style={eyebrow}>{t.price_eyebrow}</div>
-              <h2 style={{...secH,marginBottom:0}}>{t.price_h.split("\\n").map((l,i)=><span key={i}>{l}{i<2&&<br/>}</span>)}</h2>
+              <p className="text-xs font-mono text-green-600 tracking-widest uppercase mb-3">{t.price_eyebrow}</p>
+              <h2 className="text-4xl font-extrabold tracking-tight leading-tight text-gray-900">{t.price_title}</h2>
             </div>
-            <p style={secSub}>{t.price_sub}</p>
+            <p className="text-base text-gray-500 leading-relaxed pb-1">{t.price_sub}</p>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:20}}>
-            {t.plans.map(p=>(
-              <div key={p.tier} style={{background:p.featured?TEXT:W,border:p.featured?"none":`1px solid ${BORDER}`,borderRadius:16,padding:32,position:"relative"}}>
-                {p.featured && <div style={{position:"absolute",top:-12,left:"50%",transform:"translateX(-50%)",background:G,color:W,fontSize:10,fontFamily:MONO,padding:"4px 16px",borderRadius:100,whiteSpace:"nowrap",fontWeight:600}}>Most popular</div>}
-                <div style={{fontFamily:MONO,fontSize:10,color:p.featured?"rgba(255,255,255,.35)":MUTED,marginBottom:10,letterSpacing:1.5}}>{p.tier}</div>
-                <div style={{display:"flex",alignItems:"baseline",gap:4,marginBottom:6}}>
-                  <span style={{fontSize:42,fontWeight:800,letterSpacing:-2,color:p.featured?W:TEXT}}>{p.price}</span>
-                  <span style={{fontSize:14,color:p.featured?"rgba(255,255,255,.35)":MUTED}}>{p.per}</span>
+          <div className="grid grid-cols-3 gap-5">
+            {t.plans.map(p => (
+              <div key={p.tier} className={`rounded-2xl p-8 relative ${p.f ? "bg-gray-900" : "bg-gray-50 border border-gray-200"}`}>
+                {p.f && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-600 text-white text-xs font-mono px-4 py-1 rounded-full whitespace-nowrap font-semibold">
+                    Most popular
+                  </div>
+                )}
+                <div className={`font-mono text-xs tracking-widest mb-2 ${p.f ? "text-white/30" : "text-gray-400"}`}>{p.tier}</div>
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className={`text-4xl font-extrabold tracking-tight ${p.f ? "text-white" : "text-gray-900"}`}>{p.price}</span>
+                  <span className={`text-sm ${p.f ? "text-white/30" : "text-gray-400"}`}>{p.per}</span>
                 </div>
-                <div style={{fontSize:13,color:p.featured?"rgba(255,255,255,.45)":MUTED,paddingBottom:20,borderBottom:`1px solid ${p.featured?"rgba(255,255,255,.1)":BORDER}`,marginBottom:20,lineHeight:1.5}}>{p.line}</div>
-                <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:28}}>
-                  {p.feats.map(f=>(
-                    <div key={f} style={{display:"flex",alignItems:"flex-start",gap:9,fontSize:13,color:p.featured?"rgba(255,255,255,.65)":MUTED}}>
-                      <Check featured={p.featured} />{f}
+                <div className={`text-xs leading-relaxed pb-5 mb-5 border-b ${p.f ? "text-white/40 border-white/10" : "text-gray-500 border-gray-200"}`}>{p.line}</div>
+                <div className="flex flex-col gap-2.5 mb-7">
+                  {p.feats.map(f => (
+                    <div key={f} className={`flex items-start gap-2.5 text-xs ${p.f ? "text-white/60" : "text-gray-500"}`}>
+                      <Check dark={p.f} />{f}
                     </div>
                   ))}
                 </div>
-                <button onClick={()=>router.push("/signup")} style={{width:"100%",padding:13,borderRadius:9,fontSize:14,fontWeight:600,cursor:"pointer",border:p.featured?"none":`1px solid ${BORDER2}`,background:p.featured?G:W,color:p.featured?W:TEXT,fontFamily:SANS}}>
+                <button onClick={() => router.push("/signup")}
+                  className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors ${p.f ? "bg-green-600 text-white hover:bg-green-700" : "bg-white border border-gray-300 text-gray-900 hover:border-gray-400"}`}>
                   {p.cta}
                 </button>
               </div>
@@ -520,17 +499,14 @@ export default function Landing() {
       </section>
 
       {/* FAQ */}
-      <section style={secAlt}>
-        <div style={{...inner,padding:PAD}}>
-          <div style={twoCol}>
-            <div><div style={eyebrow}>{t.faq_eyebrow}</div><h2 style={{...secH,marginBottom:0}}>{t.faq_h}</h2></div>
-            <p style={secSub}>{t.faq_sub}</p>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-            {t.faqs.map(f=>(
-              <div key={f.q} style={{background:W,border:`1px solid ${BORDER}`,borderRadius:12,padding:28}}>
-                <div style={{fontSize:14,fontWeight:700,marginBottom:10,color:TEXT}}>{f.q}</div>
-                <div style={{fontSize:13,color:MUTED,lineHeight:1.65}}>{f.a}</div>
+      <section className="bg-gray-50 border-b border-gray-200 py-24">
+        <div className="max-w-6xl mx-auto px-8">
+          <SectionHeader eyebrow={t.faq_eyebrow} title={t.faq_title} sub={t.faq_sub} />
+          <div className="grid grid-cols-2 gap-4">
+            {t.faqs.map(f => (
+              <div key={f.q} className="bg-white border border-gray-200 rounded-xl p-7">
+                <div className="text-sm font-bold text-gray-900 mb-3">{f.q}</div>
+                <div className="text-sm text-gray-500 leading-relaxed">{f.a}</div>
               </div>
             ))}
           </div>
@@ -538,28 +514,38 @@ export default function Landing() {
       </section>
 
       {/* CTA FINAL */}
-      <section style={{background:TEXT,padding:"120px 0",textAlign:"center",borderBottom:"none"}}>
-        <h2 style={{fontSize:52,fontWeight:800,color:W,letterSpacing:-2,marginBottom:16,lineHeight:1.05}}>
-          {t.final_h.replace(t.final_em,"").trim().split(" ").length > 0 ? (
-            <>Join <em style={{fontStyle:"normal",color:G}}>{t.final_em}</em> today.</>
-          ) : t.final_h}
-        </h2>
-        <p style={{fontSize:15,color:"rgba(255,255,255,.35)",marginBottom:40,fontFamily:MONO}}>{t.final_sub}</p>
-        <div style={{display:"flex",gap:12,justifyContent:"center"}}>
-          <button onClick={()=>router.push("/signup")} style={{background:W,color:TEXT,padding:"15px 36px",borderRadius:11,fontSize:15,fontWeight:700,border:"none",cursor:"pointer"}}>{t.final_cta}</button>
-          <button style={{background:"transparent",color:"rgba(255,255,255,.4)",padding:"15px 36px",borderRadius:11,fontSize:15,border:"1px solid rgba(255,255,255,.15)",cursor:"pointer"}}>{t.final_cta2}</button>
+      <section className="bg-gray-900 py-28 text-center">
+        <div className="max-w-6xl mx-auto px-8">
+          <h2 className="text-5xl font-extrabold tracking-tight text-white mb-4">
+            Join <em className="not-italic text-green-500">6Napse</em> today.
+          </h2>
+          <p className="text-sm font-mono text-gray-500 mb-10">{t.final_sub}</p>
+          <div className="flex gap-3 justify-center">
+            <button onClick={() => router.push("/signup")}
+              className="bg-white text-gray-900 px-9 py-4 rounded-xl text-base font-bold hover:bg-gray-100 transition-colors">
+              {t.final_cta}
+            </button>
+            <button className="border border-white/20 text-white/50 px-9 py-4 rounded-xl text-base hover:border-white/40 transition-colors">
+              {t.final_cta2}
+            </button>
+          </div>
         </div>
       </section>
 
-      <footer style={{background:W,borderTop:`1px solid ${BORDER}`,padding:"32px 80px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div style={{fontFamily:MONO,fontSize:16,fontWeight:700,color:TEXT}}><span style={{color:G}}>6</span>Napse</div>
-        <div style={{display:"flex",gap:28}}>
-          {t.footer_links.map(l=><a key={l} style={{fontSize:13,color:MUTED,textDecoration:"none",cursor:"pointer"}}>{l}</a>)}
+      <footer className="bg-white border-t border-gray-200 py-8">
+        <div className="max-w-6xl mx-auto px-8 flex items-center justify-between">
+          <div className="font-mono text-base font-bold text-gray-900">
+            <span className="text-green-600">6</span>Napse
+          </div>
+          <div className="flex gap-7">
+            {["Features","Shariah","Pricing","Performance","DEX Lab","Privacy","Terms"].map(l => (
+              <a key={l} className="text-sm text-gray-400 hover:text-gray-600 cursor-pointer transition-colors">{l}</a>
+            ))}
+          </div>
+          <div className="text-xs text-gray-400 font-mono">© 2026 6Napse · Not financial advice</div>
         </div>
-        <div style={{fontSize:12,color:MUTED2,fontFamily:MONO}}>© 2026 6Napse · Not financial advice</div>
       </footer>
 
-      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
     </div>
   );
 }
