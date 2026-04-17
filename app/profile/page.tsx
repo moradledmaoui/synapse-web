@@ -70,7 +70,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 export default function ProfilePage() {
-  const { data: profile, refetch: refetch: refresh } = useApi<any>("/api/profile", 0);
+  const { data: profile, refetch: refresh } = useApi<any>("/api/profile", 0);
   const [saving, setSaving]        = useState(false);
   const [testing, setTesting]      = useState(false);
   const [msg, setMsg]              = useState("");
