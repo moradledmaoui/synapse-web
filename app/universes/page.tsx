@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useApi } from "../hooks/useApi";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API = "";  // Proxy Next.js
 
 interface Universe {
   label: string; icon: string; count: number;

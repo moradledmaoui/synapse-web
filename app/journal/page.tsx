@@ -1,7 +1,7 @@
 "use client";
 import { useApi } from "../hooks/useApi";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API = "";  // Proxy Next.js
 
 interface Trade {
   id: number; symbol: string; side: string; strategy: string;

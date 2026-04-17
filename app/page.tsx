@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useApi } from "./hooks/useApi";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API = "";  // Proxy Next.js
 
 interface Portfolio {
   capital: number; total_value: number; pnl_usdt: number; pnl_pct: number;
