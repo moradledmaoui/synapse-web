@@ -8,6 +8,7 @@ const TABS = [
   { href: "/opportunities", label: "DEX",     icon: "✦" },
   { href: "/journal",       label: "Journal", icon: "≡" },
   { href: "/coach",         label: "Coach",   icon: "◇" },
+  { href: "/profile",       label: "Profil",  icon: "○" },
 ];
 
 export default function Nav() {
