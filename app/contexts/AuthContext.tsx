@@ -1,7 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API = "";  // Proxy Next.js — pas besoin de l URL complète
 
 interface User { id: number; email: string; name: string; role: string; }
 interface AuthCtx {

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API = "";  // Proxy Next.js — pas besoin de l URL complète
 
 export default function ResetPasswordPage() {
   const router = useRouter();

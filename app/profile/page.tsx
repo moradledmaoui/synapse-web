@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useApi } from "../hooks/useApi";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API = "";  // Proxy Next.js — pas besoin de l URL complète
 
 function fmt(n?: number, d = 2): string {
   if (n == null || isNaN(n)) return "--";
