@@ -273,13 +273,22 @@ export default function Home() {
         </div>
 
         {dexPositions.length > 0 && (
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-[10px] text-gray-400 uppercase tracking-widest">Pepites DEX <span className="text-yellow-500">Simulation</span></div>
-              <span className="text-[11px] text-gray-400 font-mono">${fmt(dexData?.total_invested, 0)} investi</span>
+          <a href="/opportunities" className="block border border-yellow-200 bg-yellow-50 rounded-xl px-4 py-3 hover:border-yellow-300 transition-colors">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-[10px] text-yellow-600 uppercase tracking-widest font-mono mb-1">Pepites DEX · Simulation</div>
+                <div className="text-sm text-gray-700 font-mono">
+                  {dexPositions.length} positions · ${fmt(dexData?.total_invested, 0)} investi
+                </div>
+              </div>
+              <div className="text-right">
+                <div className={"text-sm font-mono font-medium " + ((dexData?.total_pnl || 0) >= 0 ? "text-green-600" : "text-red-500")}>
+                  {(dexData?.total_pnl || 0) >= 0 ? "+" : ""}{fmt(dexData?.total_pnl)} USDT
+                </div>
+                <div className="text-[10px] text-gray-400 font-mono mt-0.5">Voir le detail →</div>
+              </div>
             </div>
-            <div className="space-y-3">{dexPositions.map((pos, i) => <DexCard key={i} pos={pos} />)}</div>
-          </div>
+          </a>
         )}
 
         <div className="grid grid-cols-3 gap-3">
