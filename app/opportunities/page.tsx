@@ -2,101 +2,116 @@
 import { useState } from "react";
 import { useApi } from "../hooks/useApi";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
-
 function fmt(n?: number, d = 2): string {
   if (n == null || isNaN(n)) return "--";
   return n.toFixed(d);
 }
-function fmtPrice(p?: number): string {
-  if (!p) return "--";
-  if (p < 0.000001) return p.toFixed(10);
-  if (p < 0.0001) return p.toFixed(8);
-  if (p < 0.01) return p.toFixed(6);
-  if (p < 1) return p.toFixed(4);
-  return p.toFixed(2);
-}
 
 const CHAIN_COLORS: Record<string, string> = {
-  Solana:   "text-purple-600 bg-purple-50 border-purple-200",
+  base:     "text-blue-600 bg-blue-50 border-blue-200",
   Base:     "text-blue-600 bg-blue-50 border-blue-200",
-  Ethereum: "text-gray-600 bg-gray-50 border-gray-200",
+  solana:   "text-purple-600 bg-purple-50 border-purple-200",
+  Solana:   "text-purple-600 bg-purple-50 border-purple-200",
   BSC:      "text-yellow-600 bg-yellow-50 border-yellow-200",
-  Arbitrum: "text-cyan-600 bg-cyan-50 border-cyan-200",
 };
 
-function PositionCard({ pos }: { pos: any }) {
+const DECISION_COLORS: Record<string, string> = {
+  watching: "text-yellow-600 bg-yellow-50 border-yellow-200",
+  bought:   "text-green-600 bg-green-50 border-green-200",
+  exited:   "text-gray-500 bg-gray-50 border-gray-200",
+  rejected: "text-red-400 bg-red-50 border-red-200",
+};
+
+const EXIT_LABELS: Record<string, string> = {
+  take_profit_x2:  "TP x2 ✅",
+  hard_stop_loss:  "Hard SL ❌",
+  time_stop_48h:   "Time Stop ⏱",
+};
+
+function ScoreBar({ score }: { score: number }) {
+  const color = score >= 60 ? "bg-green-400" : score >= 45 ? "bg-yellow-400" : "bg-red-300";
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-[3px] bg-gray-100 rounded-full overflow-hidden">
+        <div className={color + " h-full rounded-full"} style={{ width: score + "%" }} />
+      </div>
+      <span className="text-[10px] font-mono text-gray-500 w-8">{score}/100</span>
+    </div>
+  );
+}
+
+function WatchCard({ token }: { token: any }) {
   const [open, setOpen] = useState(false);
-  const pnl    = parseFloat(pos.pnl_usdt || 0);
-  const pnlPct = parseFloat(pos.pnl_pct || 0);
-  const x      = parseFloat(pos.x_multiplier || 1);
-  const entry  = parseFloat(pos.entry_price || 0);
-  const current = parseFloat(pos.current_price || entry);
-  const target = entry * 2;
-  const progPct = entry > 0 ? Math.min(100, Math.max(0, ((current - entry) / (target - entry)) * 100)) : 0;
-  const up = pnl >= 0;
-  const chainColor = CHAIN_COLORS[pos.network] || "text-gray-500 bg-gray-50 border-gray-200";
+  const chainColor  = CHAIN_COLORS[token.network] || "text-gray-500 bg-gray-50 border-gray-200";
+  const decColor    = DECISION_COLORS[token.decision] || "text-gray-400 bg-gray-50 border-gray-100";
+  const age         = parseFloat(token.age_hours || 0);
+  const liq         = parseFloat(token.liq_at_detect || 0);
+  const score       = parseInt(token.score || 0);
+  const multiple    = parseFloat(token.max_multiple_7d || 1);
+  const exitLabel   = EXIT_LABELS[token.exit_reason] || token.exit_reason || "";
 
   return (
-    <div className={"border rounded-xl overflow-hidden " + (open ? "border-gray-300" : "border-gray-200 hover:border-gray-300") + " bg-white transition-colors"}>
-      <button className="w-full px-4 pt-3.5 pb-3 text-left" onClick={() => setOpen(!open)}>
+    <div className={"border rounded-xl overflow-hidden transition-colors bg-white " + (open ? "border-gray-300" : "border-gray-200 hover:border-gray-300")}>
+      <button className="w-full px-4 pt-3 pb-2.5 text-left" onClick={() => setOpen(!open)}>
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gray-100 flex-shrink-0 flex items-center justify-center text-[10px] text-gray-400 font-mono">
-            {pos.symbol?.slice(0,3)}
+          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-[9px] text-gray-400 font-mono flex-shrink-0">
+            {token.symbol?.replace(/[^\w]/g, "").slice(0,3)}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-900">{pos.symbol}</span>
-              <span className={"text-[9px] px-1.5 py-0.5 rounded border font-mono " + chainColor}>{pos.network}</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-sm font-medium text-gray-900">{token.symbol}</span>
+              <span className={"text-[9px] px-1.5 py-0.5 rounded border font-mono " + chainColor}>{token.network}</span>
+              <span className={"text-[9px] px-1.5 py-0.5 rounded border font-mono " + decColor}>{token.decision}</span>
             </div>
-            <div className="text-[11px] text-gray-400 mt-0.5 font-mono">${fmt(pos.size_usdt, 0)} investi · x{x.toFixed(2)}</div>
-          </div>
-          <div className="text-right">
-            <div className={"text-sm font-mono font-medium " + (up ? "text-green-600" : "text-red-500")}>
-              {up ? "+" : ""}{fmt(pnl)} USDT
-            </div>
-            <div className={"text-[11px] font-mono " + (up ? "text-green-500" : "text-red-400")}>
-              {up ? "+" : ""}{fmt(pnlPct)}%
+            <div className="text-[10px] text-gray-400 font-mono mt-0.5">
+              {age.toFixed(1)}h · ${(liq/1000).toFixed(0)}k liq
+              {token.absorption_signal && " · ⚡ absorption"}
+              {token.social_present && " · 🌐 social"}
             </div>
           </div>
-          <svg className={"w-3.5 h-3.5 text-gray-400 transition-transform " + (open ? "rotate-180" : "")} viewBox="0 0 12 12" fill="none">
-            <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
+          <div className="text-right flex-shrink-0">
+            {token.decision === "exited" && (
+              <div className={"text-sm font-mono font-medium " + (multiple >= 2 ? "text-green-600" : "text-red-500")}>
+                {multiple.toFixed(2)}x
+              </div>
+            )}
+            {token.decision === "bought" && (
+              <div className="text-sm font-mono font-medium text-green-600">
+                {multiple.toFixed(2)}x
+              </div>
+            )}
+            {exitLabel && <div className="text-[9px] font-mono text-gray-400">{exitLabel}</div>}
+          </div>
         </div>
-        <div className="mt-3">
-          <div className="h-[3px] bg-gray-100 rounded-full overflow-hidden">
-            <div className={"h-full rounded-full transition-all " + (up ? "bg-gradient-to-r from-green-300 to-green-500" : "bg-gradient-to-r from-red-300 to-red-400")}
-              style={{ width: Math.max(2, Math.abs(progPct)) + "%" }} />
-          </div>
-          <div className="flex justify-between mt-1 text-[9px] font-mono text-gray-400">
-            <span>Entrée ${fmtPrice(entry)}</span>
-            <span>{progPct.toFixed(0)}% vers x2</span>
-            <span>Target ${fmtPrice(target)}</span>
-          </div>
+        <div className="mt-2">
+          <ScoreBar score={score} />
         </div>
       </button>
 
       {open && (
-        <div className="px-4 pb-4 pt-3 border-t border-gray-100 bg-gray-50 space-y-3">
+        <div className="px-4 pb-3 pt-2 border-t border-gray-100 bg-gray-50 space-y-2">
           <div className="grid grid-cols-3 gap-2">
             {[
-              { label: "Entree",   value: "$" + fmtPrice(entry) },
-              { label: "Actuel",   value: "$" + fmtPrice(current), color: up ? "text-green-600" : "text-red-500" },
-              { label: "Target x2", value: "$" + fmtPrice(target), color: "text-yellow-600" },
-              { label: "Investi",  value: "$" + fmt(pos.size_usdt, 0) },
-              { label: "P&L",      value: (pnl >= 0 ? "+" : "") + fmt(pnl) + " USDT", color: up ? "text-green-600" : "text-red-500" },
-              { label: "x Factor", value: x.toFixed(3) + "x", color: x >= 1 ? "text-green-600" : "text-red-500" },
+              { label: "Liq",      value: "$" + (liq/1000).toFixed(0) + "k" },
+              { label: "Age",      value: age.toFixed(1) + "h" },
+              { label: "Rug",      value: (token.rug_score || "--") + "/100", color: parseInt(token.rug_score) <= 20 ? "text-green-600" : "text-red-400" },
+              { label: "Top 10",   value: fmt(token.top10_pct, 0) + "%" },
+              { label: "Absorb",   value: token.absorption_signal ? "Oui ⚡" : "Non", color: token.absorption_signal ? "text-green-600" : "text-gray-400" },
+              { label: "Social",   value: token.social_present ? "Oui 🌐" : "Non", color: token.social_present ? "text-green-600" : "text-gray-400" },
             ].map(m => (
-              <div key={m.label} className="bg-white rounded-lg px-3 py-2 border border-gray-100">
+              <div key={m.label} className="bg-white rounded-lg px-2.5 py-2 border border-gray-100">
                 <div className="text-[9px] text-gray-400 uppercase mb-1">{m.label}</div>
                 <div className={"text-[11px] font-mono " + (m.color || "text-gray-900")}>{m.value}</div>
               </div>
             ))}
           </div>
-          {pos.dex_url && (
-            <a href={pos.dex_url} target="_blank" rel="noopener noreferrer"
-              className="block text-center py-2 rounded-lg border border-gray-200 text-[11px] text-gray-500 hover:border-gray-300 font-mono">
-              Voir sur DEX →
+          {token.decision_reason && (
+            <p className="text-[10px] text-gray-400 font-mono leading-relaxed">{token.decision_reason}</p>
+          )}
+          {token.dex_url && (
+            <a href={token.dex_url} target="_blank" rel="noopener noreferrer"
+              className="block text-center py-1.5 rounded-lg border border-gray-200 text-[10px] text-gray-400 hover:border-gray-300 font-mono">
+              Voir sur DEX
             </a>
           )}
         </div>
@@ -105,154 +120,153 @@ function PositionCard({ pos }: { pos: any }) {
   );
 }
 
-function TokenCard({ token }: { token: any }) {
-  const [open, setOpen] = useState(false);
-  const chainColor = CHAIN_COLORS[token.network] || "text-gray-500 bg-gray-50 border-gray-200";
-  const scoreColor = token.score >= 60 ? "text-green-600" : token.score >= 40 ? "text-yellow-600" : "text-red-400";
-  const up = (token.price_change_24h || 0) >= 0;
+function PositionCard({ pos }: { pos: any }) {
+  const buy   = parseFloat(pos.buy_price || pos.price_at_detect || 1);
+  const multi = parseFloat(pos.max_multiple_7d || 1);
+  const pct   = (multi - 1) * 100;
+  const up    = multi >= 1;
 
   return (
-    <div className="border border-gray-200 bg-white rounded-xl overflow-hidden hover:border-gray-300 transition-colors">
-      <button className="w-full px-4 pt-3.5 pb-3 text-left" onClick={() => setOpen(!open)}>
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-gray-100 flex-shrink-0 flex items-center justify-center text-[10px] text-gray-400 font-mono">
-            {token.symbol?.slice(0,3)}
+    <div className="border border-green-200 bg-white rounded-xl px-4 py-3">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-900">{pos.symbol}</span>
+            <span className={"text-[9px] px-1.5 py-0.5 rounded border font-mono " + (CHAIN_COLORS[pos.network] || "")}>{pos.network}</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-medium text-gray-900">{token.name || token.symbol}</span>
-              <span className={"text-[9px] px-1.5 py-0.5 rounded border font-mono " + chainColor}>{token.network}</span>
-              {token.tradable && <span className="text-[9px] text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded font-mono">AUTO</span>}
-            </div>
-            <div className="text-[11px] text-gray-400 mt-0.5 font-mono">
-              Liq ${(token.liquidity/1000).toFixed(0)}k · Age {token.age_days}j · Vol/Liq {fmt(token.vol_liq_ratio, 1)}×
-            </div>
-          </div>
-          <div className="text-right">
-            <div className={"text-sm font-mono font-medium " + scoreColor}>{token.score}/100</div>
-            <div className={"text-[11px] font-mono " + (up ? "text-green-500" : "text-red-400")}>
-              {up ? "+" : ""}{fmt(token.price_change_24h, 1)}%
-            </div>
+          <div className="text-[10px] text-gray-400 font-mono mt-0.5">
+            Entrée ${buy.toFixed(6)} · score {pos.score}/100
           </div>
         </div>
-        <div className="mt-2.5 h-[3px] bg-gray-100 rounded-full overflow-hidden">
-          <div className={"h-full rounded-full " + (token.score >= 60 ? "bg-green-400" : token.score >= 40 ? "bg-yellow-400" : "bg-red-300")}
-            style={{ width: token.score + "%" }} />
-        </div>
-      </button>
-
-      {open && (
-        <div className="px-4 pb-4 pt-3 border-t border-gray-100 bg-gray-50 space-y-3">
-          {token.signals?.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {token.signals.map((s: string, i: number) => (
-                <span key={i} className="text-[10px] bg-white border border-gray-200 px-2 py-1 rounded-lg font-mono text-gray-500">{s}</span>
-              ))}
-            </div>
-          )}
-          <div className="flex gap-2">
-            {token.dex_url && (
-              <a href={token.dex_url} target="_blank" rel="noopener noreferrer"
-                className="flex-1 py-2 rounded-lg border border-gray-200 text-[11px] text-gray-500 text-center hover:border-gray-300 font-mono">
-                Voir sur DEX →
-              </a>
-            )}
+        <div className="text-right">
+          <div className={"text-sm font-mono font-semibold " + (up ? "text-green-600" : "text-red-500")}>
+            {multi.toFixed(3)}x
+          </div>
+          <div className={"text-[10px] font-mono " + (up ? "text-green-500" : "text-red-400")}>
+            {up ? "+" : ""}{fmt(pct, 1)}%
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
 export default function DexPage() {
+  const { data: labData }    = useApi<any>("/api/dex/lab/watchlist", 60000);
   const { data: posData }    = useApi<any>("/api/dex/positions", 60000);
-  const { data: tokensData } = useApi<any>("/api/dex/tokens", 3600000);
-  const [tab, setTab]        = useState<"positions"|"radar">("positions");
+  const [tab, setTab]        = useState<"positions"|"watchlist"|"exited">("watchlist");
 
+  const watching  = labData?.watching || [];
+  const bought    = labData?.bought || [];
+  const exited    = labData?.exited || [];
+  const stats     = labData?.stats || {};
   const positions = posData?.positions || [];
-  const tokens    = (tokensData?.tokens || []).sort((a: any, b: any) => b.score - a.score);
   const totalPnl  = posData?.total_pnl || 0;
-  const invested  = posData?.total_invested || 0;
+
+  const wins   = stats.wins || 0;
+  const losses = stats.losses || 0;
+  const total  = wins + losses;
+  const wr     = total > 0 ? Math.round(wins / total * 100) : "--";
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 pb-24">
       <div className="border-b border-gray-200 px-6 py-4 sticky top-0 bg-white/95 backdrop-blur-sm z-10">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-base font-semibold text-gray-900">Pepites DEX</h1>
-            <p className="text-[11px] text-gray-400 font-mono">Simulation · Multichain</p>
+            <h1 className="text-base font-semibold text-gray-900">DEX Lab</h1>
+            <p className="text-[11px] text-gray-400 font-mono">Base · Solana · Phase 1</p>
           </div>
-          <div className={"text-sm font-mono font-semibold " + (totalPnl >= 0 ? "text-green-600" : "text-red-500")}>
-            {totalPnl >= 0 ? "+" : ""}{fmt(totalPnl)} USDT
+          <div className="text-[11px] text-gray-400 font-mono text-right">
+            <div>{stats.watching_count || 0} watch · {stats.bought_count || 0} open</div>
+            <div className="text-[10px]">WR {wr}% sur {total} exits</div>
           </div>
         </div>
       </div>
 
       <div className="px-6 pt-5 space-y-5">
 
-        <div className="flex gap-2">
+        <div className="grid grid-cols-3 gap-3">
           {[
-            { key: "positions", label: "Positions (" + positions.length + ")" },
-            { key: "radar",     label: "Radar (" + tokens.length + ")" },
+            { label: "Scannés", value: (stats.watching_count || 0) + (stats.bought_count || 0) + (stats.exited_count || 0) },
+            { label: "Wins", value: wins, color: "text-green-600" },
+            { label: "Losses", value: losses, color: "text-red-500" },
+          ].map(s => (
+            <div key={s.label} className="border border-gray-200 rounded-xl px-3 py-2.5 bg-white">
+              <div className="text-[9px] text-gray-400 uppercase tracking-wide mb-1">{s.label}</div>
+              <div className={"text-lg font-mono font-semibold " + (s.color || "text-gray-900")}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+
+        {positions.length > 0 && (
+          <div className="border border-yellow-200 bg-yellow-50 rounded-xl p-3">
+            <div className="text-[10px] text-yellow-600 font-mono uppercase mb-2">Positions DEX existantes</div>
+            <div className={"text-sm font-mono font-medium " + (totalPnl >= 0 ? "text-green-600" : "text-red-500")}>
+              {totalPnl >= 0 ? "+" : ""}{fmt(totalPnl)} USDT · {positions.length} positions
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {[
+            { key: "watchlist", label: "Watchlist (" + watching.length + ")" },
+            { key: "positions", label: "Achetés (" + bought.length + ")" },
+            { key: "exited",    label: "Sortis (" + exited.length + ")" },
           ].map(t => (
             <button key={t.key} onClick={() => setTab(t.key as any)}
-              className={"text-[11px] px-4 py-2 rounded-xl border transition-colors font-mono " +
+              className={"flex-shrink-0 text-[11px] px-4 py-2 rounded-xl border transition-colors font-mono " +
                 (tab === t.key ? "border-gray-400 bg-white text-gray-900 font-medium" : "border-gray-200 bg-white text-gray-400 hover:border-gray-300")}>
               {t.label}
             </button>
           ))}
         </div>
 
-        {tab === "positions" && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="border border-gray-200 rounded-xl px-4 py-3 bg-white">
-                <div className="text-[9px] text-gray-400 uppercase tracking-wide mb-1">Investi</div>
-                <div className="text-xl font-mono font-semibold text-gray-900">${fmt(invested, 0)}</div>
-                <div className="text-[10px] text-gray-400 mt-0.5 font-mono">USDT simulation</div>
-              </div>
-              <div className="border border-gray-200 rounded-xl px-4 py-3 bg-white">
-                <div className="text-[9px] text-gray-400 uppercase tracking-wide mb-1">P&L total</div>
-                <div className={"text-xl font-mono font-semibold " + (totalPnl >= 0 ? "text-green-600" : "text-red-500")}>
-                  {totalPnl >= 0 ? "+" : ""}{fmt(totalPnl)}
-                </div>
-                <div className="text-[10px] text-gray-400 mt-0.5 font-mono">USDT simulation</div>
-              </div>
-            </div>
-
-            {positions.length === 0 ? (
-              <div className="border border-gray-200 rounded-xl p-8 text-center bg-white">
-                <p className="text-gray-400 text-sm">Aucune position DEX</p>
-                <p className="text-gray-300 text-xs mt-1 font-mono">Les achats apparaitront ici</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {positions.map((pos: any, i: number) => <PositionCard key={i} pos={pos} />)}
-              </div>
-            )}
-          </div>
-        )}
-
-        {tab === "radar" && (
+        {tab === "watchlist" && (
           <div className="space-y-3">
-            <p className="text-[11px] text-gray-400 font-mono">
-              Tokens scorés selon age, chaîne, vélocité et sécurité.
-              Base et Solana prioritaires. BSC pénalisé.
+            <p className="text-[10px] text-gray-400 font-mono">
+              Tokens détectés sur Base et Solana. Analyse automatique H+3 avant décision d achat.
             </p>
-            {tokens.length === 0 ? (
+            {watching.length === 0 ? (
               <div className="border border-gray-200 rounded-xl p-8 text-center bg-white">
-                <p className="text-gray-400 text-sm">Collecte en cours...</p>
-                <p className="text-gray-300 text-xs mt-1 font-mono">Mise a jour toutes les 2 heures</p>
+                <p className="text-gray-400 text-sm">Scan en cours...</p>
+                <p className="text-gray-300 text-xs mt-1 font-mono">Prochain scan dans 30 minutes</p>
               </div>
             ) : (
-              tokens.map((t: any, i: number) => <TokenCard key={i} token={t} />)
+              watching.map((t: any) => <WatchCard key={t.id} token={t} />)
             )}
           </div>
         )}
 
-        <p className="text-[10px] text-gray-300 text-center font-mono pb-2">
-          Toutes les positions sont simulées. Ne pas investir sans DYOR.
+        {tab === "positions" && (
+          <div className="space-y-3">
+            {bought.length === 0 ? (
+              <div className="border border-gray-200 rounded-xl p-8 text-center bg-white">
+                <p className="text-gray-400 text-sm">Aucune position ouverte</p>
+                <p className="text-gray-300 text-xs mt-1 font-mono">Les achats apparaissent apres H+3</p>
+              </div>
+            ) : (
+              bought.map((t: any) => <PositionCard key={t.id} pos={t} />)
+            )}
+          </div>
+        )}
+
+        {tab === "exited" && (
+          <div className="space-y-3">
+            {exited.length === 0 ? (
+              <div className="border border-gray-200 rounded-xl p-8 text-center bg-white">
+                <p className="text-gray-400 text-sm">Aucune position sortie</p>
+                <p className="text-gray-300 text-xs mt-1 font-mono">Les exits apparaissent ici</p>
+              </div>
+            ) : (
+              exited.map((t: any) => <WatchCard key={t.id} token={t} />)
+            )}
+          </div>
+        )}
+
+        <p className="text-[9px] text-gray-300 text-center font-mono pb-2">
+          Phase 1 · Simulation uniquement · 30j de données pour évaluer le modèle
         </p>
+
       </div>
     </div>
   );
