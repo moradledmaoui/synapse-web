@@ -15,6 +15,7 @@ const TABS = [
 export default function Nav() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  if (["/login", "/signup"].includes(pathname) || !user) return null;
   return (
     <>
       {/* Desktop — sidebar gauche */}

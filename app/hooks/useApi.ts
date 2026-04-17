@@ -8,8 +8,10 @@ export function useApi<T>(endpoint: string, refreshInterval?: number) {
 
   const fetchData = useCallback(async () => {
     try {
-      // URL relative → passe par le proxy Next.js → VPS
-      const res = await fetch(endpoint);
+      const token = typeof window !== "undefined" ? localStorage.getItem("synapse_token") : null;
+      const headers: Record<string, string> = {};
+      if (token) headers["Authorization"] = "Bearer " + token;
+      const res = await fetch(endpoint, { headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       setData(json);
