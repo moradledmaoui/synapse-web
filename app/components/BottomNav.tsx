@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "../contexts/AuthContext";
 
 const TABS = [
   { href: "/",              label: "Home",    icon: "⌂" },
@@ -13,6 +14,7 @@ const TABS = [
 
 export default function Nav() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
   return (
     <>
       {/* Desktop — sidebar gauche */}
@@ -33,7 +35,15 @@ export default function Nav() {
             );
           })}
         </div>
-        <div className="px-3 pt-4 border-t border-gray-100">
+        <div className="px-3 pt-4 border-t border-gray-100 space-y-2">
+          {user && (
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-gray-900 text-white flex items-center justify-center text-[9px] font-bold">
+                {user.name?.slice(0,2).toUpperCase()}
+              </div>
+              <span className="text-[11px] text-gray-500 font-mono truncate">{user.name}</span>
+            </div>
+          )}
           <div className="text-[9px] text-gray-300 font-mono">v3.0 · Paper Trading</div>
         </div>
       </div>
