@@ -17,7 +17,7 @@ interface Position {
   regime_at_open: string; opened_at: string; logo_url?: string;
 }
 interface PositionsData { positions: Position[]; total_pnl: number; }
-interface DexPortfolio { positions: any[]; total_invested: number; }
+interface DexPortfolio { positions: any[]; total_invested: number; total_pnl: number; }
 interface Sentiment { summary: { fear_greed_value: number; btc_dominance_pct: number; }; }
 
 function fmt(n?: number, d = 2): string {
