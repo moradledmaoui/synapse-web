@@ -285,7 +285,7 @@ export default function Home() {
                 <div className={"text-sm font-mono font-medium " + ((dexData?.total_pnl || 0) >= 0 ? "text-green-600" : "text-red-500")}>
                   {(dexData?.total_pnl || 0) >= 0 ? "+" : ""}{fmt(dexData?.total_pnl)} USDT
                 </div>
-                <div className="text-[10px] text-gray-400 font-mono mt-0.5">Voir le detail →</div>
+                <div className="text-[10px] text-gray-400 font-mono mt-0.5">Voir le detail</div>
               </div>
             </div>
           </a>
