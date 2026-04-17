@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useApi } from "../hooks/useApi";
+import { useAuth } from "../contexts/AuthContext";
 
 const API = "";  // Proxy Next.js — pas besoin de l URL complète
 
@@ -314,6 +315,15 @@ export default function ProfilePage() {
           {profile.binance_verified && (
             <p className="text-[11px] text-green-600 font-mono text-center">API verifiee</p>
           )}
+        </Section>
+
+        <Section title="Compte">
+          <button
+            onClick={() => { if (confirm("Se déconnecter ?")) logout(); }}
+            className="w-full py-2.5 rounded-xl border border-gray-200 text-[13px] font-mono text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            Se déconnecter
+          </button>
         </Section>
 
         <Section title="Danger Zone">
