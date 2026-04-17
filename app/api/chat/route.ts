@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL    = process.env.NEXT_PUBLIC_API_URL || "http://116.203.235.44:8000";
+const API_URL    = process.env.NEXT_PUBLIC_API_URL || "https://api.6napse.io";
 const OPENAI_KEY = process.env.OPENAI_API_KEY || "";
 
 const MCP_TOOLS = [
